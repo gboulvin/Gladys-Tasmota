@@ -1,0 +1,1446 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "Tasmota",
+  "description": {
+    "en": "Control your Tasmota devices locally over MQTT or HTTP: relays, lights, energy, sensors.",
+    "fr": "Pilotez vos appareils Tasmota en local (MQTT ou HTTP) : relais, lampes, énergie, capteurs.",
+    "de": "Steuern Sie Ihre Tasmota-Geräte lokal per MQTT oder HTTP: Relais, Lampen, Energie, Sensoren.",
+    "es": "Controle sus dispositivos Tasmota en local por MQTT o HTTP: relés, luces, energía, sensores."
+  },
+  "version": "0.0.0",
+  "docker_image": "ghcr.io/gboulvin/gladys-tasmota:0.0.0",
+  "gladys_version": ">=5.1.0",
+  "cover_image": "https://raw.githubusercontent.com/gboulvin/Gladys-Tasmota/main/cover.png",
+  "categories": ["protocols", "lighting", "energy"],
+  "transports": ["local"],
+  "containers": [
+    {
+      "name": "mosquitto",
+      "docker_image": "eclipse-mosquitto:2.0.20",
+      "start": "manual",
+      "command": ["mosquitto", "-c", "/config/mosquitto.conf"],
+      "volumes": ["/config"],
+      "ports": [
+        {
+          "container_port": 1883,
+          "name": "mqtt",
+          "browsable": false,
+          "label": {
+            "en": "MQTT broker for Tasmota",
+            "fr": "Broker MQTT pour Tasmota",
+            "de": "MQTT-Broker für Tasmota",
+            "es": "Broker MQTT para Tasmota"
+          }
+        }
+      ],
+      "memory_mb": 64,
+      "cpu": 0.2
+    }
+  ],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Getting started",
+        "fr": "Pour commencer",
+        "de": "Erste Schritte",
+        "es": "Primeros pasos"
+      },
+      "description": {
+        "en": "Tasmota devices talk to Gladys through an MQTT broker (recommended: instant updates) or over HTTP (polled). Every device is identified by its MAC address, so renaming it or changing its IP keeps its history.",
+        "fr": "Les appareils Tasmota communiquent avec Gladys via un broker MQTT (recommandé : mises à jour instantanées) ou en HTTP (interrogation périodique). Chaque appareil est identifié par son adresse MAC : le renommer ou changer son IP conserve son historique.",
+        "de": "Tasmota-Geräte kommunizieren mit Gladys über einen MQTT-Broker (empfohlen: sofortige Aktualisierung) oder per HTTP (Abfrage). Jedes Gerät wird über seine MAC-Adresse erkannt: Umbenennen oder eine neue IP behalten den Verlauf.",
+        "es": "Los dispositivos Tasmota se comunican con Gladys mediante un broker MQTT (recomendado: actualizaciones instantáneas) o por HTTP (consulta periódica). Cada dispositivo se identifica por su dirección MAC: renombrarlo o cambiar su IP conserva su historial."
+      },
+      "links": [
+        {
+          "url": "https://tasmota.github.io/docs/MQTT/",
+          "label": {
+            "en": "Tasmota MQTT documentation",
+            "fr": "Documentation MQTT de Tasmota",
+            "de": "Tasmota-MQTT-Dokumentation",
+            "es": "Documentación MQTT de Tasmota"
+          }
+        },
+        {
+          "url": "https://tasmota.github.io/docs/Commands/",
+          "label": {
+            "en": "Tasmota commands",
+            "fr": "Commandes Tasmota",
+            "de": "Tasmota-Befehle",
+            "es": "Comandos de Tasmota"
+          }
+        }
+      ]
+    },
+    {
+      "key": "mqtt_mode",
+      "type": "select",
+      "display": "radio",
+      "label": {
+        "en": "MQTT broker",
+        "fr": "Broker MQTT",
+        "de": "MQTT-Broker",
+        "es": "Broker MQTT"
+      },
+      "description": {
+        "en": "Use your own broker (for instance the one of the Gladys MQTT integration), let the integration run its own, or use HTTP only.",
+        "fr": "Utilisez votre broker (par exemple celui de l'intégration MQTT de Gladys), laissez l'intégration lancer le sien, ou utilisez uniquement HTTP.",
+        "de": "Nutzen Sie Ihren eigenen Broker (z. B. den der Gladys-MQTT-Integration), lassen Sie die Integration einen eigenen starten oder nutzen Sie nur HTTP.",
+        "es": "Use su propio broker (por ejemplo el de la integración MQTT de Gladys), deje que la integración ejecute el suyo o use solo HTTP."
+      },
+      "required": true,
+      "default": "external",
+      "options": [
+        {
+          "value": "external",
+          "label": {
+            "en": "My MQTT broker",
+            "fr": "Mon broker MQTT",
+            "de": "Mein MQTT-Broker",
+            "es": "Mi broker MQTT"
+          }
+        },
+        {
+          "value": "embedded",
+          "label": {
+            "en": "Embedded broker",
+            "fr": "Broker intégré",
+            "de": "Integrierter Broker",
+            "es": "Broker integrado"
+          }
+        },
+        {
+          "value": "disabled",
+          "label": {
+            "en": "No MQTT (HTTP only)",
+            "fr": "Pas de MQTT (HTTP seul)",
+            "de": "Kein MQTT (nur HTTP)",
+            "es": "Sin MQTT (solo HTTP)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "mqtt_url",
+      "type": "string",
+      "label": {
+        "en": "Broker URL",
+        "fr": "URL du broker",
+        "de": "Broker-URL",
+        "es": "URL del broker"
+      },
+      "description": {
+        "en": "My MQTT broker mode. mqtt://, mqtts://, ws:// or wss://; port 1883 by default.",
+        "fr": "Mode « Mon broker MQTT ». mqtt://, mqtts://, ws:// ou wss:// ; port 1883 par défaut.",
+        "de": "Modus „Mein MQTT-Broker“. mqtt://, mqtts://, ws:// oder wss://; Standardport 1883.",
+        "es": "Modo «Mi broker MQTT». mqtt://, mqtts://, ws:// o wss://; puerto 1883 por defecto."
+      },
+      "placeholder": {
+        "en": "e.g. mqtt://192.168.1.10:1883",
+        "fr": "ex. mqtt://192.168.1.10:1883",
+        "de": "z. B. mqtt://192.168.1.10:1883",
+        "es": "p. ej. mqtt://192.168.1.10:1883"
+      },
+      "default": ""
+    },
+    {
+      "key": "mqtt_username",
+      "type": "string",
+      "label": {
+        "en": "Broker user",
+        "fr": "Utilisateur du broker",
+        "de": "Broker-Benutzer",
+        "es": "Usuario del broker"
+      },
+      "placeholder": {
+        "en": "e.g. gladys",
+        "fr": "ex. gladys",
+        "de": "z. B. gladys",
+        "es": "p. ej. gladys"
+      },
+      "default": ""
+    },
+    {
+      "key": "mqtt_password",
+      "type": "secret",
+      "label": {
+        "en": "Broker password",
+        "fr": "Mot de passe du broker",
+        "de": "Broker-Passwort",
+        "es": "Contraseña del broker"
+      }
+    },
+    {
+      "key": "full_topic",
+      "type": "select",
+      "label": {
+        "en": "Tasmota FullTopic",
+        "fr": "FullTopic Tasmota",
+        "de": "Tasmota-FullTopic",
+        "es": "FullTopic de Tasmota"
+      },
+      "description": {
+        "en": "Must match the FullTopic of your devices (Configuration > MQTT).",
+        "fr": "Doit correspondre au FullTopic de vos appareils (Configuration > MQTT).",
+        "de": "Muss dem FullTopic Ihrer Geräte entsprechen (Konfiguration > MQTT).",
+        "es": "Debe coincidir con el FullTopic de sus dispositivos (Configuración > MQTT)."
+      },
+      "required": true,
+      "default": "prefix_topic",
+      "options": [
+        {
+          "value": "prefix_topic",
+          "label": {
+            "en": "%prefix%/%topic%/ (default)",
+            "fr": "%prefix%/%topic%/ (par défaut)",
+            "de": "%prefix%/%topic%/ (Standard)",
+            "es": "%prefix%/%topic%/ (predeterminado)"
+          }
+        },
+        {
+          "value": "topic_prefix",
+          "label": {
+            "en": "%topic%/%prefix%/",
+            "fr": "%topic%/%prefix%/",
+            "de": "%topic%/%prefix%/",
+            "es": "%topic%/%prefix%/"
+          }
+        }
+      ]
+    },
+    {
+      "key": "embedded_broker",
+      "type": "section",
+      "label": {
+        "en": "Embedded broker",
+        "fr": "Broker intégré",
+        "de": "Integrierter Broker",
+        "es": "Broker integrado"
+      },
+      "description": {
+        "en": "In this mode your devices connect to {{gladys_host}}, port {{port:mqtt}}, user tasmota. The \"Embedded broker settings\" action below gives the console command to paste in each device.",
+        "fr": "Dans ce mode vos appareils se connectent à {{gladys_host}}, port {{port:mqtt}}, utilisateur tasmota. L'action « Réglages du broker intégré » ci-dessous donne la commande à coller dans la console de chaque appareil.",
+        "de": "In diesem Modus verbinden sich Ihre Geräte mit {{gladys_host}}, Port {{port:mqtt}}, Benutzer tasmota. Die Aktion „Einstellungen des integrierten Brokers“ unten liefert den Konsolenbefehl für jedes Gerät.",
+        "es": "En este modo sus dispositivos se conectan a {{gladys_host}}, puerto {{port:mqtt}}, usuario tasmota. La acción «Ajustes del broker integrado» de abajo da el comando para pegar en la consola de cada dispositivo."
+      }
+    },
+    {
+      "key": "broker_password",
+      "type": "secret",
+      "label": {
+        "en": "Device password (embedded broker)",
+        "fr": "Mot de passe des appareils (broker intégré)",
+        "de": "Geräte-Passwort (integrierter Broker)",
+        "es": "Contraseña de los dispositivos (broker integrado)"
+      },
+      "description": {
+        "en": "Leave empty to generate one.",
+        "fr": "Laissez vide pour en générer un.",
+        "de": "Leer lassen, um eines zu erzeugen.",
+        "es": "Déjelo vacío para generar una."
+      }
+    },
+    {
+      "key": "http_section",
+      "type": "section",
+      "label": {
+        "en": "HTTP devices",
+        "fr": "Appareils HTTP",
+        "de": "HTTP-Geräte",
+        "es": "Dispositivos HTTP"
+      },
+      "description": {
+        "en": "Devices without MQTT are read over HTTP. List their addresses here, or use the \"Scan an IP range\" action.",
+        "fr": "Les appareils sans MQTT sont lus en HTTP. Listez leurs adresses ici, ou utilisez l'action « Scanner une plage d'IP ».",
+        "de": "Geräte ohne MQTT werden per HTTP gelesen. Listen Sie ihre Adressen hier auf oder nutzen Sie die Aktion „IP-Bereich scannen“.",
+        "es": "Los dispositivos sin MQTT se leen por HTTP. Indique sus direcciones aquí o use la acción «Escanear un rango de IP»."
+      }
+    },
+    {
+      "key": "http_addresses",
+      "type": "string",
+      "label": {
+        "en": "HTTP addresses",
+        "fr": "Adresses HTTP",
+        "de": "HTTP-Adressen",
+        "es": "Direcciones HTTP"
+      },
+      "description": {
+        "en": "IPs, host names or ranges, separated by commas.",
+        "fr": "IP, noms d'hôte ou plages, séparés par des virgules.",
+        "de": "IPs, Hostnamen oder Bereiche, durch Kommas getrennt.",
+        "es": "IP, nombres de host o rangos, separados por comas."
+      },
+      "placeholder": {
+        "en": "e.g. 192.168.1.20, 192.168.1.30-45",
+        "fr": "ex. 192.168.1.20, 192.168.1.30-45",
+        "de": "z. B. 192.168.1.20, 192.168.1.30-45",
+        "es": "p. ej. 192.168.1.20, 192.168.1.30-45"
+      },
+      "default": ""
+    },
+    {
+      "key": "http_username",
+      "type": "string",
+      "label": {
+        "en": "Web user",
+        "fr": "Utilisateur web",
+        "de": "Web-Benutzer",
+        "es": "Usuario web"
+      },
+      "description": {
+        "en": "Only if a web admin password is set on the devices (user admin).",
+        "fr": "Seulement si un mot de passe web est défini sur les appareils (utilisateur admin).",
+        "de": "Nur wenn auf den Geräten ein Web-Passwort gesetzt ist (Benutzer admin).",
+        "es": "Solo si hay una contraseña web en los dispositivos (usuario admin)."
+      },
+      "placeholder": {
+        "en": "e.g. admin",
+        "fr": "ex. admin",
+        "de": "z. B. admin",
+        "es": "p. ej. admin"
+      },
+      "default": ""
+    },
+    {
+      "key": "http_password",
+      "type": "secret",
+      "label": {
+        "en": "Web password",
+        "fr": "Mot de passe web",
+        "de": "Web-Passwort",
+        "es": "Contraseña web"
+      }
+    },
+    {
+      "key": "poll_frequency",
+      "type": "number",
+      "label": {
+        "en": "HTTP refresh interval (s)",
+        "fr": "Intervalle de rafraîchissement HTTP (s)",
+        "de": "HTTP-Aktualisierungsintervall (s)",
+        "es": "Intervalo de actualización HTTP (s)"
+      },
+      "description": {
+        "en": "How often HTTP devices are read (MQTT devices push their changes).",
+        "fr": "Fréquence de lecture des appareils HTTP (les appareils MQTT envoient leurs changements).",
+        "de": "Wie oft HTTP-Geräte gelesen werden (MQTT-Geräte senden ihre Änderungen).",
+        "es": "Frecuencia de lectura de los dispositivos HTTP (los MQTT envían sus cambios)."
+      },
+      "required": false,
+      "default": 30,
+      "min": 10,
+      "max": 3600
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "timeout_seconds": 10
+    },
+    {
+      "key": "broker_info",
+      "label": {
+        "en": "Embedded broker settings",
+        "fr": "Réglages du broker intégré",
+        "de": "Einstellungen des integrierten Brokers",
+        "es": "Ajustes del broker integrado"
+      },
+      "description": {
+        "en": "Gives the Tasmota console command pointing a device at the embedded broker.",
+        "fr": "Donne la commande console Tasmota qui connecte un appareil au broker intégré.",
+        "de": "Liefert den Tasmota-Konsolenbefehl, der ein Gerät mit dem integrierten Broker verbindet.",
+        "es": "Da el comando de consola Tasmota que conecta un dispositivo al broker integrado."
+      },
+      "fields": [
+        {
+          "key": "gladys_host",
+          "type": "string",
+          "label": {
+            "en": "IP address of Gladys",
+            "fr": "Adresse IP de Gladys",
+            "de": "IP-Adresse von Gladys",
+            "es": "Dirección IP de Gladys"
+          },
+          "placeholder": {
+            "en": "e.g. 192.168.1.10",
+            "fr": "ex. 192.168.1.10",
+            "de": "z. B. 192.168.1.10",
+            "es": "p. ej. 192.168.1.10"
+          }
+        }
+      ]
+    },
+    {
+      "key": "add_http_device",
+      "label": {
+        "en": "Add an HTTP device",
+        "fr": "Ajouter un appareil HTTP",
+        "de": "HTTP-Gerät hinzufügen",
+        "es": "Añadir un dispositivo HTTP"
+      },
+      "timeout_seconds": 15,
+      "fields": [
+        {
+          "key": "address",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "IP address or host name",
+            "fr": "Adresse IP ou nom d'hôte",
+            "de": "IP-Adresse oder Hostname",
+            "es": "Dirección IP o nombre de host"
+          },
+          "placeholder": {
+            "en": "e.g. 192.168.1.20",
+            "fr": "ex. 192.168.1.20",
+            "de": "z. B. 192.168.1.20",
+            "es": "p. ej. 192.168.1.20"
+          }
+        },
+        {
+          "key": "username",
+          "type": "string",
+          "label": {
+            "en": "Web user (optional)",
+            "fr": "Utilisateur web (facultatif)",
+            "de": "Web-Benutzer (optional)",
+            "es": "Usuario web (opcional)"
+          }
+        },
+        {
+          "key": "password",
+          "type": "secret",
+          "label": {
+            "en": "Web password (optional)",
+            "fr": "Mot de passe web (facultatif)",
+            "de": "Web-Passwort (optional)",
+            "es": "Contraseña web (opcional)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "scan_http",
+      "label": {
+        "en": "Scan an IP range",
+        "fr": "Scanner une plage d'IP",
+        "de": "IP-Bereich scannen",
+        "es": "Escanear un rango de IP"
+      },
+      "timeout_seconds": 120,
+      "description": {
+        "en": "Looks for Tasmota devices over HTTP (1024 addresses at most).",
+        "fr": "Cherche des appareils Tasmota en HTTP (1024 adresses au plus).",
+        "de": "Sucht Tasmota-Geräte per HTTP (höchstens 1024 Adressen).",
+        "es": "Busca dispositivos Tasmota por HTTP (1024 direcciones como máximo)."
+      },
+      "fields": [
+        {
+          "key": "range",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "Addresses",
+            "fr": "Adresses",
+            "de": "Adressen",
+            "es": "Direcciones"
+          },
+          "placeholder": {
+            "en": "e.g. 192.168.1.1-254",
+            "fr": "ex. 192.168.1.1-254",
+            "de": "z. B. 192.168.1.1-254",
+            "es": "p. ej. 192.168.1.1-254"
+          }
+        },
+        {
+          "key": "username",
+          "type": "string",
+          "label": {
+            "en": "Web user (optional)",
+            "fr": "Utilisateur web (facultatif)",
+            "de": "Web-Benutzer (optional)",
+            "es": "Usuario web (opcional)"
+          }
+        },
+        {
+          "key": "password",
+          "type": "secret",
+          "label": {
+            "en": "Web password (optional)",
+            "fr": "Mot de passe web (facultatif)",
+            "de": "Web-Passwort (optional)",
+            "es": "Contraseña web (opcional)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "identify",
+      "label": {
+        "en": "Identify a light",
+        "fr": "Identifier une lampe",
+        "de": "Lampe identifizieren",
+        "es": "Identificar una luz"
+      },
+      "timeout_seconds": 10,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "key": "send_command",
+      "label": {
+        "en": "Send a command",
+        "fr": "Envoyer une commande",
+        "de": "Befehl senden",
+        "es": "Enviar un comando"
+      },
+      "timeout_seconds": 15,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          },
+          "required": true
+        },
+        {
+          "key": "command",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "Command",
+            "fr": "Commande",
+            "de": "Befehl",
+            "es": "Comando"
+          },
+          "placeholder": {
+            "en": "e.g. Power1",
+            "fr": "ex. Power1",
+            "de": "z. B. Power1",
+            "es": "p. ej. Power1"
+          }
+        },
+        {
+          "key": "payload",
+          "type": "string",
+          "label": {
+            "en": "Value (optional)",
+            "fr": "Valeur (facultative)",
+            "de": "Wert (optional)",
+            "es": "Valor (opcional)"
+          },
+          "placeholder": {
+            "en": "e.g. TOGGLE",
+            "fr": "ex. TOGGLE",
+            "de": "z. B. TOGGLE",
+            "es": "p. ej. TOGGLE"
+          }
+        }
+      ]
+    },
+    {
+      "key": "restart",
+      "label": {
+        "en": "Restart a device",
+        "fr": "Redémarrer un appareil",
+        "de": "Gerät neu starten",
+        "es": "Reiniciar un dispositivo"
+      },
+      "timeout_seconds": 10,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "key": "configure_mqtt",
+      "label": {
+        "en": "Move a device to MQTT",
+        "fr": "Passer un appareil en MQTT",
+        "de": "Gerät auf MQTT umstellen",
+        "es": "Pasar un dispositivo a MQTT"
+      },
+      "timeout_seconds": 15,
+      "description": {
+        "en": "Sends the broker settings to an HTTP device; it restarts and switches to MQTT.",
+        "fr": "Envoie les réglages du broker à un appareil HTTP ; il redémarre et passe en MQTT.",
+        "de": "Sendet die Broker-Einstellungen an ein HTTP-Gerät; es startet neu und wechselt zu MQTT.",
+        "es": "Envía los ajustes del broker a un dispositivo HTTP; se reinicia y pasa a MQTT."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          },
+          "required": true
+        },
+        {
+          "key": "host",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "Broker address seen by the device",
+            "fr": "Adresse du broker vue par l'appareil",
+            "de": "Broker-Adresse aus Sicht des Geräts",
+            "es": "Dirección del broker vista por el dispositivo"
+          },
+          "placeholder": {
+            "en": "e.g. 192.168.1.10",
+            "fr": "ex. 192.168.1.10",
+            "de": "z. B. 192.168.1.10",
+            "es": "p. ej. 192.168.1.10"
+          }
+        },
+        {
+          "key": "port",
+          "type": "number",
+          "min": 1,
+          "max": 65535,
+          "label": {
+            "en": "Port (optional)",
+            "fr": "Port (facultatif)",
+            "de": "Port (optional)",
+            "es": "Puerto (opcional)"
+          }
+        },
+        {
+          "key": "username",
+          "type": "string",
+          "label": {
+            "en": "Broker user (optional)",
+            "fr": "Utilisateur du broker (facultatif)",
+            "de": "Broker-Benutzer (optional)",
+            "es": "Usuario del broker (opcional)"
+          }
+        },
+        {
+          "key": "password",
+          "type": "secret",
+          "label": {
+            "en": "Broker password (optional)",
+            "fr": "Mot de passe du broker (facultatif)",
+            "de": "Broker-Passwort (optional)",
+            "es": "Contraseña del broker (opcional)"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "button_pressed",
+      "label": {
+        "en": "Tasmota button pressed",
+        "fr": "Bouton Tasmota appuyé",
+        "de": "Tasmota-Taste gedrückt",
+        "es": "Botón Tasmota pulsado"
+      },
+      "description": {
+        "en": "Single, double, triple press or hold (SetOption73 1 on the device).",
+        "fr": "Appui simple, double, triple ou long (SetOption73 1 sur l'appareil).",
+        "de": "Einfach, doppelt, dreifach oder lang gedrückt (SetOption73 1 am Gerät).",
+        "es": "Pulsación simple, doble, triple o larga (SetOption73 1 en el dispositivo)."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          }
+        },
+        {
+          "key": "button",
+          "type": "number",
+          "min": 1,
+          "max": 32,
+          "label": {
+            "en": "Button number",
+            "fr": "Numéro du bouton",
+            "de": "Tastennummer",
+            "es": "Número de botón"
+          }
+        },
+        {
+          "key": "action",
+          "type": "multi_select",
+          "label": {
+            "en": "Press",
+            "fr": "Appui",
+            "de": "Drücken",
+            "es": "Pulsación"
+          },
+          "options": [
+            {
+              "value": "SINGLE",
+              "label": {
+                "en": "Single",
+                "fr": "Simple",
+                "de": "Einfach",
+                "es": "Simple"
+              }
+            },
+            {
+              "value": "DOUBLE",
+              "label": {
+                "en": "Double",
+                "fr": "Double",
+                "de": "Doppelt",
+                "es": "Doble"
+              }
+            },
+            {
+              "value": "TRIPLE",
+              "label": {
+                "en": "Triple",
+                "fr": "Triple",
+                "de": "Dreifach",
+                "es": "Triple"
+              }
+            },
+            {
+              "value": "QUAD",
+              "label": {
+                "en": "Quadruple",
+                "fr": "Quadruple",
+                "de": "Vierfach",
+                "es": "Cuádruple"
+              }
+            },
+            {
+              "value": "PENTA",
+              "label": {
+                "en": "Quintuple",
+                "fr": "Quintuple",
+                "de": "Fünffach",
+                "es": "Quíntuple"
+              }
+            },
+            {
+              "value": "HOLD",
+              "label": {
+                "en": "Hold",
+                "fr": "Appui long",
+                "de": "Gedrückt halten",
+                "es": "Mantener"
+              }
+            },
+            {
+              "value": "CLEAR",
+              "label": {
+                "en": "Released after hold",
+                "fr": "Relâché après appui long",
+                "de": "Losgelassen nach Halten",
+                "es": "Soltado tras mantener"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "button",
+          "type": "number",
+          "label": {
+            "en": "Button number",
+            "fr": "Numéro du bouton",
+            "de": "Tastennummer",
+            "es": "Número de botón"
+          }
+        },
+        {
+          "key": "action",
+          "type": "string",
+          "label": {
+            "en": "Press",
+            "fr": "Appui",
+            "de": "Drücken",
+            "es": "Pulsación"
+          }
+        }
+      ]
+    },
+    {
+      "key": "switch_changed",
+      "label": {
+        "en": "Tasmota switch input changed",
+        "fr": "Entrée interrupteur Tasmota changée",
+        "de": "Tasmota-Schaltereingang geändert",
+        "es": "Entrada de interruptor Tasmota cambiada"
+      },
+      "description": {
+        "en": "A wired switch changed (SetOption114 1 on the device).",
+        "fr": "Un interrupteur câblé a changé (SetOption114 1 sur l'appareil).",
+        "de": "Ein verdrahteter Schalter hat sich geändert (SetOption114 1 am Gerät).",
+        "es": "Un interruptor cableado cambió (SetOption114 1 en el dispositivo)."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          }
+        },
+        {
+          "key": "switch",
+          "type": "number",
+          "min": 1,
+          "max": 28,
+          "label": {
+            "en": "Switch number",
+            "fr": "Numéro de l'interrupteur",
+            "de": "Schalternummer",
+            "es": "Número de interruptor"
+          }
+        },
+        {
+          "key": "action",
+          "type": "multi_select",
+          "label": {
+            "en": "Action",
+            "fr": "Action",
+            "de": "Aktion",
+            "es": "Acción"
+          },
+          "options": [
+            {
+              "value": "ON",
+              "label": {
+                "en": "On",
+                "fr": "Allumé",
+                "de": "Ein",
+                "es": "Encendido"
+              }
+            },
+            {
+              "value": "OFF",
+              "label": {
+                "en": "Off",
+                "fr": "Éteint",
+                "de": "Aus",
+                "es": "Apagado"
+              }
+            },
+            {
+              "value": "TOGGLE",
+              "label": {
+                "en": "Toggle",
+                "fr": "Bascule",
+                "de": "Umschalten",
+                "es": "Alternar"
+              }
+            },
+            {
+              "value": "HOLD",
+              "label": {
+                "en": "Hold",
+                "fr": "Maintenu",
+                "de": "Gehalten",
+                "es": "Mantenido"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "switch",
+          "type": "number",
+          "label": {
+            "en": "Switch number",
+            "fr": "Numéro de l'interrupteur",
+            "de": "Schalternummer",
+            "es": "Número de interruptor"
+          }
+        },
+        {
+          "key": "action",
+          "type": "string",
+          "label": {
+            "en": "Action",
+            "fr": "Action",
+            "de": "Aktion",
+            "es": "Acción"
+          }
+        }
+      ]
+    },
+    {
+      "key": "rf_code_received",
+      "label": {
+        "en": "RF code received",
+        "fr": "Code RF reçu",
+        "de": "RF-Code empfangen",
+        "es": "Código RF recibido"
+      },
+      "description": {
+        "en": "A 433 MHz code received by an RF bridge (remote, door contact, PIR...).",
+        "fr": "Un code 433 MHz reçu par un pont RF (télécommande, contact de porte, PIR...).",
+        "de": "Ein von einer RF-Bridge empfangener 433-MHz-Code (Fernbedienung, Türkontakt, PIR...).",
+        "es": "Un código de 433 MHz recibido por un puente RF (mando, contacto de puerta, PIR...)."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "RF bridge",
+            "fr": "Pont RF",
+            "de": "RF-Bridge",
+            "es": "Puente RF"
+          }
+        },
+        {
+          "key": "code",
+          "type": "string",
+          "label": {
+            "en": "Code (Data)",
+            "fr": "Code (Data)",
+            "de": "Code (Data)",
+            "es": "Código (Data)"
+          },
+          "placeholder": {
+            "en": "e.g. E5CD7E",
+            "fr": "ex. E5CD7E",
+            "de": "z. B. E5CD7E",
+            "es": "p. ej. E5CD7E"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "code",
+          "type": "string",
+          "label": {
+            "en": "Code",
+            "fr": "Code",
+            "de": "Code",
+            "es": "Código"
+          }
+        },
+        {
+          "key": "rf_key",
+          "type": "string",
+          "label": {
+            "en": "Learned RF key",
+            "fr": "Touche RF apprise",
+            "de": "Gelernte RF-Taste",
+            "es": "Tecla RF aprendida"
+          }
+        }
+      ]
+    },
+    {
+      "key": "ir_code_received",
+      "label": {
+        "en": "IR code received",
+        "fr": "Code IR reçu",
+        "de": "IR-Code empfangen",
+        "es": "Código IR recibido"
+      },
+      "description": {
+        "en": "An infrared code received by a Tasmota IR receiver.",
+        "fr": "Un code infrarouge reçu par un récepteur IR Tasmota.",
+        "de": "Ein von einem Tasmota-IR-Empfänger empfangener Infrarotcode.",
+        "es": "Un código infrarrojo recibido por un receptor IR Tasmota."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "IR receiver",
+            "fr": "Récepteur IR",
+            "de": "IR-Empfänger",
+            "es": "Receptor IR"
+          }
+        },
+        {
+          "key": "code",
+          "type": "string",
+          "label": {
+            "en": "Code (Data)",
+            "fr": "Code (Data)",
+            "de": "Code (Data)",
+            "es": "Código (Data)"
+          },
+          "placeholder": {
+            "en": "e.g. 0x00FF30CF",
+            "fr": "ex. 0x00FF30CF",
+            "de": "z. B. 0x00FF30CF",
+            "es": "p. ej. 0x00FF30CF"
+          }
+        },
+        {
+          "key": "protocol",
+          "type": "string",
+          "label": {
+            "en": "Protocol",
+            "fr": "Protocole",
+            "de": "Protokoll",
+            "es": "Protocolo"
+          },
+          "placeholder": {
+            "en": "e.g. NEC",
+            "fr": "ex. NEC",
+            "de": "z. B. NEC",
+            "es": "p. ej. NEC"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "code",
+          "type": "string",
+          "label": {
+            "en": "Code",
+            "fr": "Code",
+            "de": "Code",
+            "es": "Código"
+          }
+        },
+        {
+          "key": "protocol",
+          "type": "string",
+          "label": {
+            "en": "Protocol",
+            "fr": "Protocole",
+            "de": "Protokoll",
+            "es": "Protocolo"
+          }
+        }
+      ]
+    },
+    {
+      "key": "availability_changed",
+      "label": {
+        "en": "Tasmota device online / offline",
+        "fr": "Appareil Tasmota en ligne / hors ligne",
+        "de": "Tasmota-Gerät online / offline",
+        "es": "Dispositivo Tasmota en línea / desconectado"
+      },
+      "description": {
+        "en": "A device lost or found its connection.",
+        "fr": "Un appareil a perdu ou retrouvé sa connexion.",
+        "de": "Ein Gerät hat seine Verbindung verloren oder wiedergefunden.",
+        "es": "Un dispositivo perdió o recuperó su conexión."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          }
+        },
+        {
+          "key": "status",
+          "type": "select",
+          "label": {
+            "en": "New state",
+            "fr": "Nouvel état",
+            "de": "Neuer Zustand",
+            "es": "Nuevo estado"
+          },
+          "options": [
+            {
+              "value": "online",
+              "label": {
+                "en": "Online",
+                "fr": "En ligne",
+                "de": "Online",
+                "es": "En línea"
+              }
+            },
+            {
+              "value": "offline",
+              "label": {
+                "en": "Offline",
+                "fr": "Hors ligne",
+                "de": "Offline",
+                "es": "Desconectado"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "status",
+          "type": "string",
+          "label": {
+            "en": "New state",
+            "fr": "Nouvel état",
+            "de": "Neuer Zustand",
+            "es": "Nuevo estado"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "send_command",
+      "label": {
+        "en": "Send a Tasmota command",
+        "fr": "Envoyer une commande Tasmota",
+        "de": "Tasmota-Befehl senden",
+        "es": "Enviar un comando Tasmota"
+      },
+      "description": {
+        "en": "Any console command (Backlog, RfSend, IRSend, Rule...). Scene variables allowed.",
+        "fr": "N'importe quelle commande console (Backlog, RfSend, IRSend, Rule...). Variables de scène acceptées.",
+        "de": "Beliebiger Konsolenbefehl (Backlog, RfSend, IRSend, Rule...). Szenenvariablen erlaubt.",
+        "es": "Cualquier comando de consola (Backlog, RfSend, IRSend, Rule...). Se admiten variables de escena."
+      },
+      "timeout_seconds": 15,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          },
+          "required": true
+        },
+        {
+          "key": "command",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "Command",
+            "fr": "Commande",
+            "de": "Befehl",
+            "es": "Comando"
+          },
+          "placeholder": {
+            "en": "e.g. Backlog",
+            "fr": "ex. Backlog",
+            "de": "z. B. Backlog",
+            "es": "p. ej. Backlog"
+          }
+        },
+        {
+          "key": "payload",
+          "type": "string",
+          "label": {
+            "en": "Value",
+            "fr": "Valeur",
+            "de": "Wert",
+            "es": "Valor"
+          },
+          "placeholder": {
+            "en": "e.g. Power1 ON; Delay 50; Power1 OFF",
+            "fr": "ex. Power1 ON; Delay 50; Power1 OFF",
+            "de": "z. B. Power1 ON; Delay 50; Power1 OFF",
+            "es": "p. ej. Power1 ON; Delay 50; Power1 OFF"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "key": "answered",
+          "type": "boolean",
+          "label": {
+            "en": "Device answered",
+            "fr": "L'appareil a répondu",
+            "de": "Gerät hat geantwortet",
+            "es": "El dispositivo respondió"
+          }
+        },
+        {
+          "key": "response",
+          "type": "string",
+          "label": {
+            "en": "Answer (JSON)",
+            "fr": "Réponse (JSON)",
+            "de": "Antwort (JSON)",
+            "es": "Respuesta (JSON)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "pulse_relay",
+      "label": {
+        "en": "Turn a relay on for a while",
+        "fr": "Allumer un relais un moment",
+        "de": "Relais zeitweise einschalten",
+        "es": "Encender un relé un tiempo"
+      },
+      "description": {
+        "en": "The device turns the relay off by itself, even if Gladys restarts.",
+        "fr": "L'appareil coupe le relais lui-même, même si Gladys redémarre.",
+        "de": "Das Gerät schaltet das Relais selbst aus, auch wenn Gladys neu startet.",
+        "es": "El dispositivo apaga el relé por sí mismo, aunque Gladys se reinicie."
+      },
+      "timeout_seconds": 10,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          },
+          "required": true
+        },
+        {
+          "key": "relay",
+          "type": "number",
+          "min": 1,
+          "max": 32,
+          "default": 1,
+          "label": {
+            "en": "Relay number",
+            "fr": "Numéro du relais",
+            "de": "Relaisnummer",
+            "es": "Número de relé"
+          }
+        },
+        {
+          "key": "duration",
+          "type": "number",
+          "min": 1,
+          "max": 360,
+          "default": 5,
+          "label": {
+            "en": "Duration (s)",
+            "fr": "Durée (s)",
+            "de": "Dauer (s)",
+            "es": "Duración (s)"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "key": "started",
+          "type": "boolean",
+          "label": {
+            "en": "Started",
+            "fr": "Démarré",
+            "de": "Gestartet",
+            "es": "Iniciado"
+          }
+        }
+      ]
+    },
+    {
+      "key": "identify_device",
+      "label": {
+        "en": "Make a Tasmota light blink",
+        "fr": "Faire clignoter une lampe Tasmota",
+        "de": "Tasmota-Lampe blinken lassen",
+        "es": "Hacer parpadear una luz Tasmota"
+      },
+      "timeout_seconds": 10,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          },
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "key": "signalled",
+          "type": "boolean",
+          "label": {
+            "en": "Light blinked",
+            "fr": "La lampe a clignoté",
+            "de": "Lampe hat geblinkt",
+            "es": "La luz parpadeó"
+          }
+        }
+      ]
+    },
+    {
+      "key": "restart_device",
+      "label": {
+        "en": "Restart a Tasmota device",
+        "fr": "Redémarrer un appareil Tasmota",
+        "de": "Tasmota-Gerät neu starten",
+        "es": "Reiniciar un dispositivo Tasmota"
+      },
+      "timeout_seconds": 10,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          },
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "key": "restarted",
+          "type": "boolean",
+          "label": {
+            "en": "Restart sent",
+            "fr": "Redémarrage envoyé",
+            "de": "Neustart gesendet",
+            "es": "Reinicio enviado"
+          }
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "key": "tasmota_overview",
+      "label": {
+        "en": "Tasmota devices",
+        "fr": "Appareils Tasmota",
+        "de": "Tasmota-Geräte",
+        "es": "Dispositivos Tasmota"
+      },
+      "description": {
+        "en": "Online and offline devices, broker connection.",
+        "fr": "Appareils en ligne et hors ligne, connexion au broker.",
+        "de": "Online- und Offline-Geräte, Broker-Verbindung.",
+        "es": "Dispositivos en línea y desconectados, conexión al broker."
+      },
+      "icon": "cpu",
+      "action_timeout_seconds": 10
+    },
+    {
+      "key": "tasmota_device",
+      "label": {
+        "en": "Tasmota device",
+        "fr": "Appareil Tasmota",
+        "de": "Tasmota-Gerät",
+        "es": "Dispositivo Tasmota"
+      },
+      "description": {
+        "en": "Live values, signal, firmware and buttons of one device.",
+        "fr": "Valeurs en direct, signal, firmware et boutons d'un appareil.",
+        "de": "Live-Werte, Signal, Firmware und Tasten eines Geräts.",
+        "es": "Valores en directo, señal, firmware y botones de un dispositivo."
+      },
+      "icon": "toggle-right",
+      "action_timeout_seconds": 15,
+      "settings": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "key": "tasmota_energy",
+      "label": {
+        "en": "Tasmota energy",
+        "fr": "Énergie Tasmota",
+        "de": "Tasmota-Energie",
+        "es": "Energía Tasmota"
+      },
+      "description": {
+        "en": "Power chart and energy counters of a metering device.",
+        "fr": "Courbe de puissance et compteurs d'énergie d'un appareil.",
+        "de": "Leistungskurve und Energiezähler eines Messgeräts.",
+        "es": "Curva de potencia y contadores de energía de un dispositivo."
+      },
+      "icon": "zap",
+      "settings": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          },
+          "required": true
+        }
+      ]
+    }
+  ]
+}
