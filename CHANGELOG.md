@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-16
+
 ### Added
 
 - First release of the Tasmota external integration for Gladys Assistant 5.1 or
@@ -45,4 +47,5 @@ the notes of the version's GitHub Release.
 - `SECURITY.md`, `CLAUDE.md`, CI on Node 22 and 24, multi-arch Docker image
   (amd64, arm64), Release workflow and GitHub Releases.
 
-[Unreleased]: https://github.com/gboulvin/Gladys-Tasmota/commits/main
+[Unreleased]: https://github.com/gboulvin/Gladys-Tasmota/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/gboulvin/Gladys-Tasmota/releases/tag/v1.0.0
