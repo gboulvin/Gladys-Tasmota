@@ -140,3 +140,35 @@ test('the user documentation exists in the four languages', async () => {
     assert.ok(doc.trim().length >= 300, `docs/${lang}.md is too short`);
   }
 });
+
+test('the configuration form is split in one block per connection option', () => {
+  // The Gladys form shows every field at once (no conditional display): each
+  // option must say which block it uses, and each field sit in its block.
+  const keys = manifest.config_schema.map((field) => field.key);
+  const mode = manifest.config_schema.find((field) => field.key === 'mqtt_mode');
+  const blocks = { external: 1, embedded: 2, disabled: 3 };
+  for (const option of mode.options) {
+    assert.match(
+      option.label.en,
+      new RegExp(`^Option ${blocks[option.value]} .*block ${blocks[option.value]}`),
+    );
+    assert.match(option.label.fr, new RegExp(`bloc ${blocks[option.value]}`));
+  }
+  const inBlock = (section, fields) => {
+    const start = keys.indexOf(section);
+    assert.ok(start >= 0, `section ${section}`);
+    const next = keys.findIndex(
+      (key, i) => i > start && manifest.config_schema[i].type === 'section',
+    );
+    const end = next === -1 ? keys.length : next;
+    for (const field of fields) {
+      const index = keys.indexOf(field);
+      assert.ok(index > start && index < end, `${field} must sit in the block ${section}`);
+    }
+  };
+  inBlock('external_broker', ['mqtt_url', 'mqtt_username', 'mqtt_password']);
+  inBlock('embedded_broker', ['broker_password']);
+  inBlock('mqtt_topics', ['full_topic']);
+  inBlock('http_section', ['http_addresses', 'http_username', 'http_password', 'poll_frequency']);
+  assert.ok(keys.indexOf('mqtt_mode') < keys.indexOf('external_broker'), 'the choice comes first');
+});

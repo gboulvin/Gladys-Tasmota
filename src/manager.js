@@ -967,6 +967,8 @@ export class TasmotaManager {
       mode: this.config.mqtt_mode,
       mqttUrlMissing: this.config.mqtt_mode === MQTT_MODES.EXTERNAL && !this.config.mqtt_url,
       brokerConnected: this.mqtt.connected,
+      // The dedicated broker container failed to start (option 2 only).
+      brokerStartError: this.brokerError,
       brokerError: this.brokerError ?? this.mqtt.lastError?.message ?? null,
       total: records.length,
       online: records.filter((r) => r.online === true).length,

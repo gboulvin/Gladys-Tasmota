@@ -10,6 +10,19 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+
+- The configuration explains the connection choice better: a "Connection
+  mode" with three numbered options (my existing MQTT broker, a dedicated
+  broker deployed by the integration, HTTP only), then one block per option
+  saying "fill in only if you chose this option". The Gladys form cannot hide
+  the fields of the other options, so each block states which option uses it.
+- The connection status of the Configuration screen names the active option
+  and what is missing (broker URL to enter, broker unreachable, dedicated
+  broker starting or failed to start).
+- The action giving the console command of the dedicated broker is now
+  "Option 2 — Get the command for the devices".
+
 ## [1.0.1] - 2026-10-16
 
 ## [1.0.0] - 2026-10-16

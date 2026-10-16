@@ -30,43 +30,59 @@ capteurs. Aucun cloud.
 
 ## Choisir comment les appareils parlent à Gladys
 
-### Option 1 — Votre broker MQTT (recommandé si vous en avez déjà un)
+L'écran de configuration commence par **Étape 1 — Mode de connexion**, suivi de trois blocs.
+Gladys affiche tous les blocs en même temps : **remplissez uniquement le bloc de l'option
+choisie**, les autres sont ignorés et peuvent rester vides. L'état en haut de l'écran indique
+toujours l'option active et ce qu'il manque.
 
-Si vous utilisez l'intégration **MQTT** de Gladys, son broker tourne déjà sur la machine Gladys
-(port 1883, avec l'utilisateur et le mot de passe affichés dans cette intégration).
+| Mode de connexion                                 | À remplir | Il vous faut                   |
+| ------------------------------------------------- | --------- | ------------------------------ |
+| Option 1 — Mon broker MQTT existant               | bloc 1    | l'adresse et les identifiants  |
+| Option 2 — Broker dédié déployé par l'intégration | bloc 2    | rien (mot de passe facultatif) |
+| Option 3 — Pas de MQTT, HTTP uniquement           | bloc 3    | les adresses IP des appareils  |
 
-1. Dans **Configuration**, gardez **Broker MQTT : Mon broker MQTT**.
-2. **URL du broker** : `mqtt://<IP du broker>:1883` — utilisez l'adresse IP du réseau local,
-   pas `localhost` (l'intégration tourne dans son propre conteneur).
-3. Renseignez l'**utilisateur** et le **mot de passe du broker**, puis enregistrez.
+### Option 1 — Mon broker MQTT existant
+
+Par exemple le broker de l'intégration **MQTT** de Gladys, qui tourne déjà sur la machine
+Gladys (port 1883, avec l'utilisateur et le mot de passe affichés sur la page de cette
+intégration).
+
+1. **Mode de connexion** : _Option 1 — Mon broker MQTT existant_.
+2. **Bloc 1 — URL du broker** : `mqtt://<IP du broker>:1883` — utilisez l'adresse IP du réseau
+   local, pas `localhost` (l'intégration tourne dans son propre conteneur).
+3. **Bloc 1 — Utilisateur du broker** et **Mot de passe du broker**, puis enregistrez.
 4. Sur chaque appareil Tasmota : **Configuration → MQTT**, saisissez le même hôte, port,
-   utilisateur et mot de passe. Gardez le **Full Topic** par défaut `%prefix%/%topic%/` (ou
-   choisissez `%topic%/%prefix%/` dans la configuration si c'est celui que vous utilisez).
+   utilisateur et mot de passe.
 
-### Option 2 — Le broker intégré (pas encore de broker)
+### Option 2 — Broker dédié déployé par l'intégration
 
-1. Choisissez **Broker MQTT : Broker intégré** et enregistrez. L'intégration démarre son propre
-   broker Mosquitto dans un sous-conteneur ; l'écran de configuration affiche l'adresse et le
-   port que les appareils doivent utiliser (utilisateur `tasmota`).
-2. Cliquez sur l'action **Réglages du broker intégré** (saisissez l'adresse IP de Gladys) : elle
-   donne une commande prête à coller, par exemple
+1. **Mode de connexion** : _Option 2 — Broker dédié déployé par l'intégration_.
+2. **Bloc 2 — Mot de passe des appareils** : facultatif, laissez-le vide pour en générer un.
+   Enregistrez : l'intégration démarre son propre conteneur Mosquitto ; le bloc 2 affiche
+   l'adresse et le port que les appareils doivent utiliser (utilisateur `tasmota`).
+3. Lancez l'action **Option 2 — Obtenir la commande pour les appareils** (saisissez l'adresse IP
+   de Gladys) : elle donne une ligne prête à coller, par exemple
    `Backlog MqttHost 192.168.1.10; MqttPort 41883; MqttUser tasmota; MqttPassword …`.
-3. Collez-la dans la **Console** de chaque appareil Tasmota. L'appareil redémarre et apparaît
+4. Collez-la dans la **Console** de chaque appareil Tasmota. L'appareil redémarre et apparaît
    dans Gladys.
 
-Laissez **Mot de passe des appareils** vide pour en générer un, ou saisissez le vôtre.
+### Topics MQTT (options 1 et 2)
 
-### Option 3 — HTTP uniquement
+Gardez **%prefix%/%topic%/**, la valeur par défaut de Tasmota, sauf si vous avez changé le
+Full Topic de vos appareils en `%topic%/%prefix%/`.
 
-Choisissez **Broker MQTT : Pas de MQTT (HTTP seul)**, puis listez les adresses dans **Adresses
-HTTP** (`192.168.1.20, 192.168.1.30-45`) ou utilisez l'action **Scanner une plage d'IP**. Les
-appareils HTTP sont lus toutes les **Intervalle de rafraîchissement HTTP** secondes (30 par
-défaut). Si un mot de passe web est défini sur vos appareils, renseignez **Utilisateur web**
-(`admin`) et **Mot de passe web**.
+### Option 3 — Pas de MQTT, HTTP uniquement
 
-HTTP et MQTT peuvent se combiner : un appareil trouvé en HTTP qui se connecte ensuite au broker
-passe en MQTT tout seul. L'action **Passer un appareil en MQTT** envoie pour vous les réglages
-du broker à un appareil HTTP.
+1. **Mode de connexion** : _Option 3 — Pas de MQTT, HTTP uniquement_.
+2. **Bloc 3 — Adresses HTTP** : `192.168.1.20, 192.168.1.30-45` (ou utilisez l'action
+   **Scanner une plage d'IP**).
+3. **Utilisateur web** (`admin`) et **Mot de passe web** : seulement si un mot de passe web est
+   défini sur les appareils. Les appareils sont lus toutes les **Intervalle de rafraîchissement
+   HTTP** secondes (30 par défaut).
+
+Le bloc 3 fonctionne aussi avec les options 1 et 2, pour les quelques appareils qui n'utilisent
+pas MQTT. Un appareil trouvé en HTTP qui se connecte ensuite au broker passe en MQTT tout seul ;
+l'action **Passer un appareil en MQTT** lui envoie les réglages du broker pour vous.
 
 ## Ajouter les appareils
 
@@ -78,7 +94,7 @@ appareil gagne une fonctionnalité (un capteur branché, un nouveau firmware), u
 ## Actions de l'écran de configuration
 
 - **Tester la connexion** — état du broker et nombre d'appareils en ligne.
-- **Réglages du broker intégré** — la commande console pour le broker intégré.
+- **Option 2 — Obtenir la commande pour les appareils** — la ligne de console pour le broker dédié.
 - **Ajouter un appareil HTTP** / **Scanner une plage d'IP** — trouver des appareils en HTTP
   (1024 adresses au plus).
 - **Identifier une lampe** — la lampe clignote deux fois puis revient à son état. Les relais ne

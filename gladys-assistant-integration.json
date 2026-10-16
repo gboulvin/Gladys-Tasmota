@@ -43,16 +43,16 @@
       "key": "intro",
       "type": "section",
       "label": {
-        "en": "Getting started",
-        "fr": "Pour commencer",
-        "de": "Erste Schritte",
-        "es": "Primeros pasos"
+        "en": "Step 1 — Choose how your devices connect",
+        "fr": "Étape 1 — Choisissez comment vos appareils se connectent",
+        "de": "Schritt 1 — Wählen Sie, wie sich Ihre Geräte verbinden",
+        "es": "Paso 1 — Elija cómo se conectan sus dispositivos"
       },
       "description": {
-        "en": "Tasmota devices talk to Gladys through an MQTT broker (recommended: instant updates) or over HTTP (polled). Every device is identified by its MAC address, so renaming it or changing its IP keeps its history.",
-        "fr": "Les appareils Tasmota communiquent avec Gladys via un broker MQTT (recommandé : mises à jour instantanées) ou en HTTP (interrogation périodique). Chaque appareil est identifié par son adresse MAC : le renommer ou changer son IP conserve son historique.",
-        "de": "Tasmota-Geräte kommunizieren mit Gladys über einen MQTT-Broker (empfohlen: sofortige Aktualisierung) oder per HTTP (Abfrage). Jedes Gerät wird über seine MAC-Adresse erkannt: Umbenennen oder eine neue IP behalten den Verlauf.",
-        "es": "Los dispositivos Tasmota se comunican con Gladys mediante un broker MQTT (recomendado: actualizaciones instantáneas) o por HTTP (consulta periódica). Cada dispositivo se identifica por su dirección MAC: renombrarlo o cambiar su IP conserva su historial."
+        "en": "Option 1: you already have an MQTT broker (for instance the one of the Gladys MQTT integration): fill in block 1 with its address and credentials. Option 2: you have no broker: the integration deploys a dedicated Mosquitto container, fill in block 2 only. Option 3: no MQTT, the devices are read over HTTP: fill in block 3 only. The blocks of the other options are ignored, you can leave them empty.",
+        "fr": "Option 1 : vous avez déjà un broker MQTT (par exemple celui de l'intégration MQTT de Gladys) : remplissez le bloc 1 avec son adresse et ses identifiants. Option 2 : vous n'avez pas de broker : l'intégration déploie un conteneur Mosquitto dédié, remplissez uniquement le bloc 2. Option 3 : pas de MQTT, les appareils sont lus en HTTP : remplissez uniquement le bloc 3. Les blocs des autres options sont ignorés, vous pouvez les laisser vides.",
+        "de": "Option 1: Sie haben bereits einen MQTT-Broker (z. B. den der Gladys-MQTT-Integration): Füllen Sie Block 1 mit seiner Adresse und seinen Zugangsdaten aus. Option 2: Sie haben keinen Broker: Die Integration stellt einen eigenen Mosquitto-Container bereit, füllen Sie nur Block 2 aus. Option 3: kein MQTT, die Geräte werden per HTTP gelesen: Füllen Sie nur Block 3 aus. Die Blöcke der anderen Optionen werden ignoriert und können leer bleiben.",
+        "es": "Opción 1: ya tiene un broker MQTT (por ejemplo el de la integración MQTT de Gladys): rellene el bloque 1 con su dirección y credenciales. Opción 2: no tiene broker: la integración despliega un contenedor Mosquitto dedicado, rellene solo el bloque 2. Opción 3: sin MQTT, los dispositivos se leen por HTTP: rellene solo el bloque 3. Los bloques de las otras opciones se ignoran, puede dejarlos vacíos."
       },
       "links": [
         {
@@ -80,16 +80,10 @@
       "type": "select",
       "display": "radio",
       "label": {
-        "en": "MQTT broker",
-        "fr": "Broker MQTT",
-        "de": "MQTT-Broker",
-        "es": "Broker MQTT"
-      },
-      "description": {
-        "en": "Use your own broker (for instance the one of the Gladys MQTT integration), let the integration run its own, or use HTTP only.",
-        "fr": "Utilisez votre broker (par exemple celui de l'intégration MQTT de Gladys), laissez l'intégration lancer le sien, ou utilisez uniquement HTTP.",
-        "de": "Nutzen Sie Ihren eigenen Broker (z. B. den der Gladys-MQTT-Integration), lassen Sie die Integration einen eigenen starten oder nutzen Sie nur HTTP.",
-        "es": "Use su propio broker (por ejemplo el de la integración MQTT de Gladys), deje que la integración ejecute el suyo o use solo HTTP."
+        "en": "Connection mode",
+        "fr": "Mode de connexion",
+        "de": "Verbindungsmodus",
+        "es": "Modo de conexión"
       },
       "required": true,
       "default": "external",
@@ -97,31 +91,47 @@
         {
           "value": "external",
           "label": {
-            "en": "My MQTT broker",
-            "fr": "Mon broker MQTT",
-            "de": "Mein MQTT-Broker",
-            "es": "Mi broker MQTT"
+            "en": "Option 1 — My existing MQTT broker (fill in block 1)",
+            "fr": "Option 1 — Mon broker MQTT existant (remplir le bloc 1)",
+            "de": "Option 1 — Mein vorhandener MQTT-Broker (Block 1 ausfüllen)",
+            "es": "Opción 1 — Mi broker MQTT existente (rellenar el bloque 1)"
           }
         },
         {
           "value": "embedded",
           "label": {
-            "en": "Embedded broker",
-            "fr": "Broker intégré",
-            "de": "Integrierter Broker",
-            "es": "Broker integrado"
+            "en": "Option 2 — Dedicated broker deployed by the integration (fill in block 2)",
+            "fr": "Option 2 — Broker dédié déployé par l'intégration (remplir le bloc 2)",
+            "de": "Option 2 — Eigener Broker, von der Integration bereitgestellt (Block 2 ausfüllen)",
+            "es": "Opción 2 — Broker dedicado desplegado por la integración (rellenar el bloque 2)"
           }
         },
         {
           "value": "disabled",
           "label": {
-            "en": "No MQTT (HTTP only)",
-            "fr": "Pas de MQTT (HTTP seul)",
-            "de": "Kein MQTT (nur HTTP)",
-            "es": "Sin MQTT (solo HTTP)"
+            "en": "Option 3 — No MQTT, HTTP only (fill in block 3)",
+            "fr": "Option 3 — Pas de MQTT, HTTP uniquement (remplir le bloc 3)",
+            "de": "Option 3 — Kein MQTT, nur HTTP (Block 3 ausfüllen)",
+            "es": "Opción 3 — Sin MQTT, solo HTTP (rellenar el bloque 3)"
           }
         }
       ]
+    },
+    {
+      "key": "external_broker",
+      "type": "section",
+      "label": {
+        "en": "Block 1 — My existing MQTT broker (option 1 only)",
+        "fr": "Bloc 1 — Mon broker MQTT existant (option 1 uniquement)",
+        "de": "Block 1 — Mein vorhandener MQTT-Broker (nur Option 1)",
+        "es": "Bloque 1 — Mi broker MQTT existente (solo opción 1)"
+      },
+      "description": {
+        "en": "The address and credentials of your broker. With the broker of the Gladys MQTT integration: mqtt://<IP of Gladys>:1883 and the user and password shown on the page of that integration. Use the LAN IP address, not localhost: the integration runs in its own container. Your Tasmota devices must point to the same broker (Configuration > MQTT on each device).",
+        "fr": "L'adresse et les identifiants de votre broker. Avec le broker de l'intégration MQTT de Gladys : mqtt://<IP de Gladys>:1883 et l'utilisateur et le mot de passe affichés sur la page de cette intégration. Utilisez l'adresse IP du réseau local, pas localhost : l'intégration tourne dans son propre conteneur. Vos appareils Tasmota doivent pointer vers le même broker (Configuration > MQTT sur chaque appareil).",
+        "de": "Adresse und Zugangsdaten Ihres Brokers. Mit dem Broker der Gladys-MQTT-Integration: mqtt://<IP von Gladys>:1883 sowie Benutzer und Passwort von der Seite dieser Integration. Verwenden Sie die LAN-IP, nicht localhost: Die Integration läuft in einem eigenen Container. Ihre Tasmota-Geräte müssen auf denselben Broker zeigen (Configuration > MQTT auf jedem Gerät).",
+        "es": "La dirección y las credenciales de su broker. Con el broker de la integración MQTT de Gladys: mqtt://<IP de Gladys>:1883 y el usuario y la contraseña que muestra la página de esa integración. Use la IP de la red local, no localhost: la integración funciona en su propio contenedor. Sus dispositivos Tasmota deben apuntar al mismo broker (Configuration > MQTT en cada dispositivo)."
+      }
     },
     {
       "key": "mqtt_url",
@@ -131,12 +141,6 @@
         "fr": "URL du broker",
         "de": "Broker-URL",
         "es": "URL del broker"
-      },
-      "description": {
-        "en": "My MQTT broker mode. mqtt://, mqtts://, ws:// or wss://; port 1883 by default.",
-        "fr": "Mode « Mon broker MQTT ». mqtt://, mqtts://, ws:// ou wss:// ; port 1883 par défaut.",
-        "de": "Modus „Mein MQTT-Broker“. mqtt://, mqtts://, ws:// oder wss://; Standardport 1883.",
-        "es": "Modo «Mi broker MQTT». mqtt://, mqtts://, ws:// o wss://; puerto 1883 por defecto."
       },
       "placeholder": {
         "en": "e.g. mqtt://192.168.1.10:1883",
@@ -174,6 +178,54 @@
       }
     },
     {
+      "key": "embedded_broker",
+      "type": "section",
+      "label": {
+        "en": "Block 2 — Dedicated broker deployed by the integration (option 2 only)",
+        "fr": "Bloc 2 — Broker dédié déployé par l'intégration (option 2 uniquement)",
+        "de": "Block 2 — Eigener Broker der Integration (nur Option 2)",
+        "es": "Bloque 2 — Broker dedicado de la integración (solo opción 2)"
+      },
+      "description": {
+        "en": "Nothing to install: when you save, the integration starts its own Mosquitto container. Your devices connect to {{gladys_host}}, port {{port:mqtt}}, user tasmota, with the password below (leave it empty to have one generated). Then run the \"Get the command for the devices\" action: it gives the line to paste in the console of each Tasmota device.",
+        "fr": "Rien à installer : à l'enregistrement, l'intégration démarre son propre conteneur Mosquitto. Vos appareils se connectent à {{gladys_host}}, port {{port:mqtt}}, utilisateur tasmota, avec le mot de passe ci-dessous (laissez-le vide pour en générer un). Lancez ensuite l'action « Obtenir la commande pour les appareils » : elle donne la ligne à coller dans la console de chaque appareil Tasmota.",
+        "de": "Nichts zu installieren: Beim Speichern startet die Integration einen eigenen Mosquitto-Container. Ihre Geräte verbinden sich mit {{gladys_host}}, Port {{port:mqtt}}, Benutzer tasmota, mit dem Passwort unten (leer lassen, um eines zu erzeugen). Führen Sie dann die Aktion „Befehl für die Geräte abrufen“ aus: Sie liefert die Zeile für die Konsole jedes Tasmota-Geräts.",
+        "es": "Nada que instalar: al guardar, la integración inicia su propio contenedor Mosquitto. Sus dispositivos se conectan a {{gladys_host}}, puerto {{port:mqtt}}, usuario tasmota, con la contraseña de abajo (déjela vacía para generar una). Después ejecute la acción «Obtener el comando para los dispositivos»: da la línea que pegar en la consola de cada dispositivo Tasmota."
+      }
+    },
+    {
+      "key": "broker_password",
+      "type": "secret",
+      "label": {
+        "en": "Password of the devices",
+        "fr": "Mot de passe des appareils",
+        "de": "Passwort der Geräte",
+        "es": "Contraseña de los dispositivos"
+      },
+      "description": {
+        "en": "Optional: leave empty to have one generated.",
+        "fr": "Facultatif : laissez vide pour en générer un.",
+        "de": "Optional: leer lassen, um eines zu erzeugen.",
+        "es": "Opcional: déjela vacía para generar una."
+      }
+    },
+    {
+      "key": "mqtt_topics",
+      "type": "section",
+      "label": {
+        "en": "MQTT topics (options 1 and 2)",
+        "fr": "Topics MQTT (options 1 et 2)",
+        "de": "MQTT-Topics (Optionen 1 und 2)",
+        "es": "Topics MQTT (opciones 1 y 2)"
+      },
+      "description": {
+        "en": "Keep the default unless you changed the Full Topic of your devices.",
+        "fr": "Gardez la valeur par défaut, sauf si vous avez modifié le Full Topic de vos appareils.",
+        "de": "Behalten Sie den Standard, außer Sie haben das Full Topic Ihrer Geräte geändert.",
+        "es": "Mantenga el valor predeterminado salvo que haya cambiado el Full Topic de sus dispositivos."
+      }
+    },
+    {
       "key": "full_topic",
       "type": "select",
       "label": {
@@ -181,12 +233,6 @@
         "fr": "FullTopic Tasmota",
         "de": "Tasmota-FullTopic",
         "es": "FullTopic de Tasmota"
-      },
-      "description": {
-        "en": "Must match the FullTopic of your devices (Configuration > MQTT).",
-        "fr": "Doit correspondre au FullTopic de vos appareils (Configuration > MQTT).",
-        "de": "Muss dem FullTopic Ihrer Geräte entsprechen (Konfiguration > MQTT).",
-        "es": "Debe coincidir con el FullTopic de sus dispositivos (Configuración > MQTT)."
       },
       "required": true,
       "default": "prefix_topic",
@@ -212,51 +258,19 @@
       ]
     },
     {
-      "key": "embedded_broker",
-      "type": "section",
-      "label": {
-        "en": "Embedded broker",
-        "fr": "Broker intégré",
-        "de": "Integrierter Broker",
-        "es": "Broker integrado"
-      },
-      "description": {
-        "en": "In this mode your devices connect to {{gladys_host}}, port {{port:mqtt}}, user tasmota. The \"Embedded broker settings\" action below gives the console command to paste in each device.",
-        "fr": "Dans ce mode vos appareils se connectent à {{gladys_host}}, port {{port:mqtt}}, utilisateur tasmota. L'action « Réglages du broker intégré » ci-dessous donne la commande à coller dans la console de chaque appareil.",
-        "de": "In diesem Modus verbinden sich Ihre Geräte mit {{gladys_host}}, Port {{port:mqtt}}, Benutzer tasmota. Die Aktion „Einstellungen des integrierten Brokers“ unten liefert den Konsolenbefehl für jedes Gerät.",
-        "es": "En este modo sus dispositivos se conectan a {{gladys_host}}, puerto {{port:mqtt}}, usuario tasmota. La acción «Ajustes del broker integrado» de abajo da el comando para pegar en la consola de cada dispositivo."
-      }
-    },
-    {
-      "key": "broker_password",
-      "type": "secret",
-      "label": {
-        "en": "Device password (embedded broker)",
-        "fr": "Mot de passe des appareils (broker intégré)",
-        "de": "Geräte-Passwort (integrierter Broker)",
-        "es": "Contraseña de los dispositivos (broker integrado)"
-      },
-      "description": {
-        "en": "Leave empty to generate one.",
-        "fr": "Laissez vide pour en générer un.",
-        "de": "Leer lassen, um eines zu erzeugen.",
-        "es": "Déjelo vacío para generar una."
-      }
-    },
-    {
       "key": "http_section",
       "type": "section",
       "label": {
-        "en": "HTTP devices",
-        "fr": "Appareils HTTP",
-        "de": "HTTP-Geräte",
-        "es": "Dispositivos HTTP"
+        "en": "Block 3 — HTTP devices (option 3, optional with options 1 and 2)",
+        "fr": "Bloc 3 — Appareils HTTP (option 3, facultatif avec les options 1 et 2)",
+        "de": "Block 3 — HTTP-Geräte (Option 3, optional mit Optionen 1 und 2)",
+        "es": "Bloque 3 — Dispositivos HTTP (opción 3, opcional con las opciones 1 y 2)"
       },
       "description": {
-        "en": "Devices without MQTT are read over HTTP. List their addresses here, or use the \"Scan an IP range\" action.",
-        "fr": "Les appareils sans MQTT sont lus en HTTP. Listez leurs adresses ici, ou utilisez l'action « Scanner une plage d'IP ».",
-        "de": "Geräte ohne MQTT werden per HTTP gelesen. Listen Sie ihre Adressen hier auf oder nutzen Sie die Aktion „IP-Bereich scannen“.",
-        "es": "Los dispositivos sin MQTT se leen por HTTP. Indique sus direcciones aquí o use la acción «Escanear un rango de IP»."
+        "en": "Devices read over HTTP, every few seconds. Required with option 3; with options 1 and 2, only for devices that do not use MQTT. List their addresses (or use the \"Scan an IP range\" action). Web user and password: only if a web admin password is set on the devices.",
+        "fr": "Appareils lus en HTTP, toutes les quelques secondes. Obligatoire avec l'option 3 ; avec les options 1 et 2, seulement pour les appareils qui n'utilisent pas MQTT. Listez leurs adresses (ou utilisez l'action « Scanner une plage d'IP »). Utilisateur et mot de passe web : seulement si un mot de passe web est défini sur les appareils.",
+        "de": "Per HTTP gelesene Geräte, alle paar Sekunden. Pflicht bei Option 3; bei Optionen 1 und 2 nur für Geräte ohne MQTT. Listen Sie ihre Adressen auf (oder nutzen Sie die Aktion „IP-Bereich scannen“). Web-Benutzer und -Passwort: nur wenn auf den Geräten ein Web-Passwort gesetzt ist.",
+        "es": "Dispositivos leídos por HTTP, cada pocos segundos. Obligatorio con la opción 3; con las opciones 1 y 2, solo para los dispositivos que no usan MQTT. Indique sus direcciones (o use la acción «Escanear un rango de IP»). Usuario y contraseña web: solo si hay una contraseña web en los dispositivos."
       }
     },
     {
@@ -290,12 +304,6 @@
         "fr": "Utilisateur web",
         "de": "Web-Benutzer",
         "es": "Usuario web"
-      },
-      "description": {
-        "en": "Only if a web admin password is set on the devices (user admin).",
-        "fr": "Seulement si un mot de passe web est défini sur les appareils (utilisateur admin).",
-        "de": "Nur wenn auf den Geräten ein Web-Passwort gesetzt ist (Benutzer admin).",
-        "es": "Solo si hay una contraseña web en los dispositivos (usuario admin)."
       },
       "placeholder": {
         "en": "e.g. admin",
@@ -350,16 +358,16 @@
     {
       "key": "broker_info",
       "label": {
-        "en": "Embedded broker settings",
-        "fr": "Réglages du broker intégré",
-        "de": "Einstellungen des integrierten Brokers",
-        "es": "Ajustes del broker integrado"
+        "en": "Option 2 — Get the command for the devices",
+        "fr": "Option 2 — Obtenir la commande pour les appareils",
+        "de": "Option 2 — Befehl für die Geräte abrufen",
+        "es": "Opción 2 — Obtener el comando para los dispositivos"
       },
       "description": {
-        "en": "Gives the Tasmota console command pointing a device at the embedded broker.",
-        "fr": "Donne la commande console Tasmota qui connecte un appareil au broker intégré.",
-        "de": "Liefert den Tasmota-Konsolenbefehl, der ein Gerät mit dem integrierten Broker verbindet.",
-        "es": "Da el comando de consola Tasmota que conecta un dispositivo al broker integrado."
+        "en": "Gives the line to paste in the Tasmota console of each device to connect it to the dedicated broker. Enter the IP address of Gladys on your network.",
+        "fr": "Donne la ligne à coller dans la console Tasmota de chaque appareil pour le connecter au broker dédié. Saisissez l'adresse IP de Gladys sur votre réseau.",
+        "de": "Liefert die Zeile für die Tasmota-Konsole jedes Geräts, um es mit dem eigenen Broker zu verbinden. Geben Sie die IP-Adresse von Gladys in Ihrem Netz ein.",
+        "es": "Da la línea que pegar en la consola Tasmota de cada dispositivo para conectarlo al broker dedicado. Indique la dirección IP de Gladys en su red."
       },
       "fields": [
         {

@@ -172,15 +172,39 @@ test('refreshWidgets nudges every widget', async (t) => {
   assert.deepEqual(gladys.fake.widgetRefreshes.slice(-3), Object.keys(widgets));
 });
 
-test('the connection status tells what to do', () => {
-  assert.equal(connectionStatusOf({ mode: 'disabled' }).connected, true);
-  assert.match(connectionStatusOf({ mode: 'external', mqttUrlMissing: true }).message.en, /URL/);
+test('the connection status names the chosen option and the block to fill in', () => {
+  const http = connectionStatusOf({ mode: 'disabled' });
+  assert.equal(http.connected, true);
+  assert.match(http.message.fr, /Option 3/);
+
+  const noUrl = connectionStatusOf({ mode: 'external', mqttUrlMissing: true });
+  assert.equal(noUrl.connected, false);
+  assert.match(noUrl.message.en, /Option 1.*block 1/);
   assert.equal(connectionStatusOf({ mode: 'external', brokerConnected: true }).connected, true);
-  const down = connectionStatusOf({
+  const refused = connectionStatusOf({ mode: 'external', brokerError: 'Not authorized' });
+  assert.match(refused.message.fr, /bloc 1/);
+  assert.match(refused.message.fr, /Not authorized/);
+
+  const running = connectionStatusOf({ mode: 'embedded', brokerConnected: true });
+  assert.equal(running.connected, true);
+  assert.match(running.message.es, /Opción 2/);
+  const failed = connectionStatusOf({
     mode: 'embedded',
-    brokerConnected: false,
+    brokerStartError: 'boom',
     brokerError: 'boom',
   });
-  assert.equal(down.connected, false);
-  assert.match(down.message.de, /boom/);
+  assert.equal(failed.connected, false);
+  assert.match(failed.message.de, /nicht starten \(boom\)/);
+  const starting = connectionStatusOf({
+    mode: 'embedded',
+    brokerConnected: false,
+    brokerError: null,
+  });
+  assert.match(starting.message.en, /starting/);
+
+  for (const status of [http, noUrl, refused, running, failed, starting]) {
+    for (const lang of LANGUAGES) {
+      assert.equal(typeof status.message[lang], 'string');
+    }
+  }
 });

@@ -27,41 +27,56 @@ relays, bulbs and LED strips, dimmers, shutters, fans, energy meters and sensors
 
 ## Choose how the devices talk to Gladys
 
-### Option 1 — Your MQTT broker (recommended if you already have one)
+The Configuration screen starts with **Step 1 — Connection mode**, followed by three blocks.
+Gladys shows every block at once: **fill in only the block of the option you chose**, the
+others are ignored and can stay empty. The status at the top of the screen always says which
+option is active and what is missing.
 
-If you use the Gladys **MQTT** integration, its broker already runs on the Gladys host
-(port 1883, with the user and password shown in that integration).
+| Connection mode                                | Fill in | You need                        |
+| ---------------------------------------------- | ------- | ------------------------------- |
+| Option 1 — My existing MQTT broker             | block 1 | the address and credentials     |
+| Option 2 — Dedicated broker deployed by Gladys | block 2 | nothing (optional password)     |
+| Option 3 — No MQTT, HTTP only                  | block 3 | the IP addresses of the devices |
 
-1. In **Configuration**, keep **MQTT broker: My MQTT broker**.
-2. **Broker URL**: `mqtt://<IP of the broker>:1883` — use the LAN IP address, not `localhost`
-   (the integration runs in its own container).
-3. Fill the **broker user** and **password**, then save.
+### Option 1 — My existing MQTT broker
+
+For instance the broker of the Gladys **MQTT** integration, which already runs on the Gladys
+host (port 1883, with the user and password shown on the page of that integration).
+
+1. **Connection mode**: _Option 1 — My existing MQTT broker_.
+2. **Block 1 — Broker URL**: `mqtt://<IP of the broker>:1883` — use the LAN IP address, not
+   `localhost` (the integration runs in its own container).
+3. **Block 1 — Broker user** and **Broker password**, then save.
 4. On each Tasmota device: **Configuration → MQTT**, enter the same host, port, user and
-   password. Keep the default **Full Topic** `%prefix%/%topic%/` (or pick
-   `%topic%/%prefix%/` in the configuration if that is what you use).
+   password.
 
-### Option 2 — The embedded broker (no broker yet)
+### Option 2 — Dedicated broker deployed by the integration
 
-1. Choose **MQTT broker: Embedded broker** and save. The integration starts its own Mosquitto
-   broker in a sub-container; the Configuration screen shows the address and port the devices
-   must use (user `tasmota`).
-2. Click the **Embedded broker settings** action (type the IP address of Gladys): it gives a
-   ready-to-paste command, e.g.
+1. **Connection mode**: _Option 2 — Dedicated broker deployed by the integration_.
+2. **Block 2 — Password of the devices**: optional, leave it empty to have one generated.
+   Save: the integration starts its own Mosquitto container; block 2 shows the address and
+   port the devices must use (user `tasmota`).
+3. Run the **Option 2 — Get the command for the devices** action (type the IP address of
+   Gladys): it gives a ready-to-paste line, e.g.
    `Backlog MqttHost 192.168.1.10; MqttPort 41883; MqttUser tasmota; MqttPassword …`.
-3. Paste it in the **Console** of each Tasmota device. The device restarts and appears in Gladys.
+4. Paste it in the **Console** of each Tasmota device. The device restarts and appears in Gladys.
 
-Leave **Device password** empty to have one generated, or set yours.
+### MQTT topics (options 1 and 2)
 
-### Option 3 — HTTP only
+Keep **%prefix%/%topic%/**, the Tasmota default, unless you changed the Full Topic of your
+devices to `%topic%/%prefix%/`.
 
-Choose **MQTT broker: No MQTT (HTTP only)**, then either list the addresses in **HTTP
-addresses** (`192.168.1.20, 192.168.1.30-45`) or use the **Scan an IP range** action. HTTP
-devices are read every **HTTP refresh interval** seconds (30 by default). If a web admin password
-is set on your devices, fill **Web user** (`admin`) and **Web password**.
+### Option 3 — No MQTT, HTTP only
 
-HTTP and MQTT can be mixed: a device found over HTTP that later connects to the broker
-switches to MQTT by itself. The **Move a device to MQTT** action sends the broker settings to an
-HTTP device for you.
+1. **Connection mode**: _Option 3 — No MQTT, HTTP only_.
+2. **Block 3 — HTTP addresses**: `192.168.1.20, 192.168.1.30-45` (or use the **Scan an IP
+   range** action).
+3. **Web user** (`admin`) and **Web password**: only if a web admin password is set on the
+   devices. The devices are read every **HTTP refresh interval** seconds (30 by default).
+
+Block 3 also works with options 1 and 2, for the few devices that do not use MQTT. A device
+found over HTTP that later connects to the broker switches to MQTT by itself; the **Move a
+device to MQTT** action sends it the broker settings for you.
 
 ## Add the devices
 
@@ -72,7 +87,7 @@ in, a new firmware), an **Update** button appears.
 ## Actions of the Configuration screen
 
 - **Test the connection** — broker state and number of devices online.
-- **Embedded broker settings** — the console command for the embedded broker.
+- **Option 2 — Get the command for the devices** — the console line for the dedicated broker.
 - **Add an HTTP device** / **Scan an IP range** — find devices over HTTP (1024 addresses max).
 - **Identify a light** — the light blinks twice and goes back to its state. Relays never blink
   (they may drive a heater).

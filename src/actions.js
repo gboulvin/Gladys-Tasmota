@@ -91,10 +91,10 @@ export const ACTIONS = {
   async broker_info(manager, { fields, gladys }) {
     if (manager.config.mqtt_mode !== MQTT_MODES.EMBEDDED) {
       return t(
-        'The embedded broker is not enabled: choose "Embedded broker" as MQTT mode first.',
-        "Le broker intégré n'est pas activé : choisissez d'abord le mode MQTT « Broker intégré ».",
-        'Der integrierte Broker ist nicht aktiviert: Wählen Sie zuerst den MQTT-Modus „Integrierter Broker“.',
-        'El broker integrado no está activado: elija primero el modo MQTT «Broker integrado».',
+        'This action is for option 2: choose "Option 2 — Dedicated broker deployed by the integration" as connection mode and save first.',
+        "Cette action concerne l'option 2 : choisissez d'abord le mode de connexion « Option 2 — Broker dédié déployé par l'intégration » et enregistrez.",
+        'Diese Aktion gilt für Option 2: Wählen Sie zuerst den Verbindungsmodus „Option 2 — Eigener Broker, von der Integration bereitgestellt“ und speichern Sie.',
+        'Esta acción es para la opción 2: elija primero el modo de conexión «Opción 2 — Broker dedicado desplegado por la integración» y guarde.',
       );
     }
     const port = await brokerHostPort(gladys);
