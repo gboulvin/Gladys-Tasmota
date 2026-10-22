@@ -84,6 +84,42 @@ Open the **Discovery** tab of the integration: the devices found appear there, w
 features. Click **Add**, choose the room, done. When a device gains a feature (a sensor plugged
 in, a new firmware), an **Update** button appears.
 
+## Migrate from the native Tasmota integration
+
+Coming from the Tasmota integration built into Gladys? Gladys can move each device to this
+integration **in one click**, keeping its state history, the scenes and dashboards that use it,
+its room and the thermostat settings that point to it. The old device is then deleted.
+
+This requires a Gladys version that shows a **Migrate** button on the devices of the native
+Tasmota integration ([GladysAssistant/Gladys#3256](https://github.com/GladysAssistant/Gladys/pull/3256)).
+Until then, both integrations can run side by side.
+
+1. **Connect this integration to the same broker** as the native one: option 1, with in block 1
+   the address and credentials of the Gladys MQTT integration's broker. Both integrations can
+   listen to the same devices at the same time, and nothing changes on the devices. HTTP devices:
+   list their addresses in block 3.
+2. In the **Discovery** tab, **add the device**, and keep the native one for now.
+3. **Migrate right away.** When both devices record states in parallel, Gladys keeps the old
+   history only up to the first state of the new device: the states recorded twice in between
+   are dropped. The longer you wait, the longer that period.
+4. Open the native **Tasmota** integration, **Devices** tab, and click **Migrate** on the device.
+   Pick its new version: the list groups the devices by integration and shows their room.
+5. **Check the pairing of the features**, then confirm. Most of them are paired automatically
+   (relays, lights, power, voltage, current, energy of the day, temperature, humidity…). Two cases
+   are paired by hand:
+   - **Energy total**: pair it with _Energy total_. Gladys warns that the types differ (`energy`
+     in the native integration, `index` here, the type the energy monitoring relies on); the
+     values in kWh are the same, you can confirm.
+   - **A light shown as a switch**: the native integration only recognises a few light modules,
+     the others came in as a switch. This integration recognises the light: pair _Switch_ with
+     _Light_.
+
+   A feature left unpaired loses its history, and the scenes that use it must be edited.
+
+6. On a large history the migration takes a few minutes: follow it in **Settings → Tasks**. If it stops, run it again: it only moves what is left.
+
+Once every device is migrated, the native Tasmota integration has no device left.
+
 ## Actions of the Configuration screen
 
 - **Test the connection** — broker state and number of devices online.

@@ -89,6 +89,47 @@ ihren Funktionen. Klicken Sie auf **Hinzufügen**, wählen Sie den Raum, fertig.
 eine neue Funktion (ein angeschlossener Sensor, eine neue Firmware), erscheint eine Schaltfläche
 **Aktualisieren**.
 
+## Von der integrierten Tasmota-Integration migrieren
+
+Sie nutzen die in Gladys eingebaute Tasmota-Integration? Gladys kann jedes Gerät **mit einem
+Klick** auf diese Integration umstellen und dabei den Verlauf seiner Zustände, die Szenen und
+Dashboards, die es verwenden, seinen Raum und die Thermostat-Einstellungen, die darauf verweisen,
+behalten. Das alte Gerät wird anschließend gelöscht.
+
+Dafür braucht es eine Gladys-Version, die an den Geräten der integrierten Tasmota-Integration einen
+Button **Migrieren** zeigt ([GladysAssistant/Gladys#3256](https://github.com/GladysAssistant/Gladys/pull/3256)).
+Bis dahin können beide Integrationen nebeneinander laufen.
+
+1. **Verbinden Sie diese Integration mit demselben Broker** wie die integrierte: Option 1, in
+   Block 1 Adresse und Zugangsdaten des Brokers der Gladys-MQTT-Integration. Beide Integrationen
+   können gleichzeitig dieselben Geräte hören, an den Geräten ändert sich nichts. HTTP-Geräte:
+   tragen Sie ihre Adressen in Block 3 ein.
+2. Fügen Sie das Gerät im Reiter **Erkennung** hinzu und behalten Sie das integrierte vorerst.
+3. **Migrieren Sie sofort.** Zeichnen beide Geräte parallel Zustände auf, behält Gladys den alten
+   Verlauf nur bis zum ersten Zustand des neuen Geräts: Die in der Zwischenzeit doppelt
+   aufgezeichneten Zustände werden gelöscht. Je länger Sie warten, desto länger dieser Zeitraum.
+4. Öffnen Sie die integrierte **Tasmota**-Integration, Reiter **Meine Geräte**, und klicken Sie am Gerät
+   auf **Migrieren**. Wählen Sie seine neue Version: Die Liste gruppiert die Geräte nach Integration
+   und zeigt ihren Raum.
+5. **Prüfen Sie die Zuordnung der Funktionen** und bestätigen Sie. Die meisten werden automatisch
+   zugeordnet (Relais, Lampen, Leistung, Spannung, Strom, Energie heute, Temperatur,
+   Luftfeuchtigkeit…). Zwei Fälle ordnen Sie von Hand zu:
+   - **Energie gesamt**: Ordnen Sie sie _Energy total_ zu. Gladys weist darauf hin, dass die Typen
+     abweichen (`energy` in der integrierten Integration, `index` hier, der Typ, auf dem die
+     Energieüberwachung beruht); die Werte in kWh sind gleich, Sie können bestätigen.
+   - **Eine als Schalter erkannte Lampe**: Die integrierte Integration kennt nur wenige
+     Lampenmodule, die anderen kamen als Schalter an. Diese Integration erkennt die Lampe: Ordnen
+     Sie _Switch_ der _Light_ zu.
+
+   Eine nicht zugeordnete Funktion verliert ihren Verlauf, und die Szenen, die sie nutzen, müssen
+   angepasst werden.
+
+6. Bei einem großen Verlauf dauert die Migration einige Minuten: Verfolgen Sie sie unter
+   **Einstellungen → Aufgaben**. Bricht sie ab, starten Sie sie erneut: Sie
+   verschiebt nur, was übrig ist.
+
+Sind alle Geräte migriert, hat die integrierte Tasmota-Integration kein Gerät mehr.
+
 ## Aktionen der Konfigurationsseite
 
 - **Verbindung testen** — Broker-Status und Anzahl der Geräte online.

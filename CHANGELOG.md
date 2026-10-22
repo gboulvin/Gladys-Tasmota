@@ -10,6 +10,13 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Added
+
+- Documentation, in the four languages: how to migrate the devices of the
+  Tasmota integration built into Gladys to this one, keeping their history,
+  scenes and dashboards (needs a Gladys version with the Migrate button on the
+  native Tasmota devices, GladysAssistant/Gladys#3256).
+
 ## [1.0.2] - 2026-10-16
 
 ### Changed

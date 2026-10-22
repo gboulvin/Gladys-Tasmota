@@ -91,6 +91,45 @@ leurs fonctionnalités. Cliquez sur **Ajouter**, choisissez la pièce, c'est fin
 appareil gagne une fonctionnalité (un capteur branché, un nouveau firmware), un bouton **Mettre
 à jour** apparaît.
 
+## Migrer depuis l'intégration Tasmota du cœur
+
+Vous utilisiez l'intégration Tasmota intégrée à Gladys ? Gladys peut basculer chaque appareil vers
+cette intégration **en un clic**, en conservant l'historique de ses états, les scènes et tableaux de
+bord qui l'utilisent, sa pièce et les réglages de thermostat qui pointent vers lui. L'ancien appareil
+est ensuite supprimé.
+
+Il faut une version de Gladys qui affiche un bouton **Migrer** sur les appareils de l'intégration
+Tasmota du cœur ([GladysAssistant/Gladys#3256](https://github.com/GladysAssistant/Gladys/pull/3256)).
+D'ici là, les deux intégrations peuvent fonctionner côte à côte.
+
+1. **Connectez cette intégration au même broker** que celle du cœur : option 1, avec dans le bloc 1
+   l'adresse et les identifiants du broker de l'intégration MQTT de Gladys. Les deux intégrations
+   peuvent écouter les mêmes appareils en même temps, rien ne change sur les appareils. Appareils
+   HTTP : listez leurs adresses dans le bloc 3.
+2. Dans l'onglet **Découverte**, **ajoutez l'appareil**, et gardez pour l'instant celui du cœur.
+3. **Migrez tout de suite.** Quand les deux appareils enregistrent des états en parallèle, Gladys ne
+   garde l'ancien historique que jusqu'au premier état du nouvel appareil : les états enregistrés en
+   double entre-temps sont supprimés. Plus vous attendez, plus cette période est longue.
+4. Ouvrez l'intégration **Tasmota** du cœur, onglet **Appareils**, et cliquez sur **Migrer** sur
+   l'appareil. Choisissez sa nouvelle version : la liste regroupe les appareils par intégration et
+   indique leur pièce.
+5. **Vérifiez l'association des fonctionnalités**, puis confirmez. La plupart sont associées
+   automatiquement (relais, lampes, puissance, tension, courant, énergie du jour, température,
+   humidité…). Deux cas s'associent à la main :
+   - **Énergie totale** : associez-la à _Energy total_. Gladys signale que les types diffèrent
+     (`energy` dans l'intégration du cœur, `index` ici, le type sur lequel s'appuie le suivi
+     d'énergie) ; les valeurs en kWh sont les mêmes, vous pouvez confirmer.
+   - **Une lampe vue comme un interrupteur** : l'intégration du cœur ne reconnaît que quelques
+     modules de lampe, les autres arrivaient comme interrupteur. Cette intégration reconnaît la
+     lampe : associez _Switch_ à _Light_.
+
+   Une fonctionnalité laissée sans association perd son historique, et les scènes qui l'utilisent
+   sont à modifier.
+
+6. Sur un gros historique, la migration prend quelques minutes : suivez-la dans **Paramètres → Tâches**. Si elle s'interrompt, relancez-la : elle ne déplace que ce qui reste.
+
+Une fois tous les appareils migrés, l'intégration Tasmota du cœur n'a plus aucun appareil.
+
 ## Actions de l'écran de configuration
 
 - **Tester la connexion** — état du broker et nombre d'appareils en ligne.
