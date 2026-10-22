@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-10-22
+
 ### Added
 
 - Documentation, in the four languages: how to migrate the devices of the
@@ -76,7 +78,8 @@ the notes of the version's GitHub Release.
 - `SECURITY.md`, `CLAUDE.md`, CI on Node 22 and 24, multi-arch Docker image
   (amd64, arm64), Release workflow and GitHub Releases.
 
-[Unreleased]: https://github.com/gboulvin/Gladys-Tasmota/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/gboulvin/Gladys-Tasmota/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/gboulvin/Gladys-Tasmota/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/gboulvin/Gladys-Tasmota/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/gboulvin/Gladys-Tasmota/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/gboulvin/Gladys-Tasmota/releases/tag/v1.0.0

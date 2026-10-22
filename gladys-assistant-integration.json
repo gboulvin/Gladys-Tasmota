@@ -8,8 +8,8 @@
     "de": "Steuern Sie Ihre Tasmota-Geräte lokal per MQTT oder HTTP: Relais, Lampen, Energie, Sensoren.",
     "es": "Controle sus dispositivos Tasmota en local por MQTT o HTTP: relés, luces, energía, sensores."
   },
-  "version": "1.0.2",
-  "docker_image": "ghcr.io/gboulvin/gladys-tasmota:1.0.2",
+  "version": "1.0.3",
+  "docker_image": "ghcr.io/gboulvin/gladys-tasmota:1.0.3",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/gboulvin/Gladys-Tasmota/main/cover.png",
   "categories": ["protocols", "lighting", "energy"],
