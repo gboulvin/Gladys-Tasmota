@@ -17,6 +17,11 @@ the notes of the version's GitHub Release.
   scenes and dashboards (needs a Gladys version with the Migrate button on the
   native Tasmota devices, GladysAssistant/Gladys#3256).
 
+### Security
+
+- The image is rebuilt on the latest `node:24-alpine` (Node.js and Alpine
+  security patches); development tools and CI actions up to date.
+
 ## [1.0.2] - 2026-10-16
 
 ### Changed
