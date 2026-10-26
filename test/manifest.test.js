@@ -117,9 +117,9 @@ test('dynamic selects declare a source and no static options', () => {
   }
 });
 
-test('the manifest is local-only, for Gladys 5.1.0 or later', () => {
+test('the manifest is local-only, for Gladys 5.3.0 or later (catalog keywords)', () => {
   assert.deepEqual(manifest.transports, ['local']);
-  assert.match(manifest.gladys_version, /^>=5\.1\.0/);
+  assert.match(manifest.gladys_version, /^>=5\.3\.0/);
   assert.ok(manifest.categories.length >= 1 && manifest.categories.length <= 3);
 });
 

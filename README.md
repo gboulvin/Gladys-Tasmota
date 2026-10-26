@@ -28,7 +28,7 @@ User documentation: [English](docs/en.md) · [Français](docs/fr.md) · [Deutsch
 | Transport badge | "Local", degraded when commands fall back to HTTP, unreachable when offline         |
 | Languages       | English, French, German, Spanish                                                    |
 
-Requires **Gladys 5.1.0** or later.
+Requires **Gladys 5.3.0** or later.
 
 ## Project structure
 
