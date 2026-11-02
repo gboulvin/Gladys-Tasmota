@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-02
+
 ### Added
 
 - "Customize a feature" action, like the edit page of the native Tasmota
@@ -100,7 +102,8 @@ the notes of the version's GitHub Release.
 - `SECURITY.md`, `CLAUDE.md`, CI on Node 22 and 24, multi-arch Docker image
   (amd64, arm64), Release workflow and GitHub Releases.
 
-[Unreleased]: https://github.com/gboulvin/Gladys-Tasmota/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/gboulvin/Gladys-Tasmota/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/gboulvin/Gladys-Tasmota/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/gboulvin/Gladys-Tasmota/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/gboulvin/Gladys-Tasmota/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/gboulvin/Gladys-Tasmota/compare/v1.0.1...v1.0.2
