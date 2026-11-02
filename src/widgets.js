@@ -22,6 +22,7 @@ import {
   WIDGET_COLORS,
 } from '@gladysassistant/integration-sdk';
 import { identifyMessage } from './actions.js';
+import { lightRelayKeys } from './tasmota/customize.js';
 import { MQTT_MODES } from './config.js';
 import { t } from './i18n.js';
 
@@ -85,9 +86,9 @@ function emptyDevice() {
   };
 }
 
-/** Feature keys of a record, filtered by category (and type). */
-function featureKeys(record, category, type) {
-  return Object.entries(record.features)
+/** Feature keys of a feature map, filtered by category (and type). */
+function featureKeys(features, category, type) {
+  return Object.entries(features)
     .filter(([, spec]) => spec.category === category && (!type || spec.type === type))
     .map(([key]) => key);
 }
@@ -143,20 +144,22 @@ function overviewContent(manager) {
 
 function deviceContent(manager, record) {
   const ids = manager.ids(record.mac);
+  // Names and categories as published, the user's customizations included.
+  const features = manager.effectiveFeatures(record);
   const tileKeys = [
-    ...featureKeys(record, C.SWITCH, T.SWITCH.BINARY),
-    ...featureKeys(record, C.LIGHT, T.LIGHT.BINARY),
-    ...featureKeys(record, C.LIGHT, T.LIGHT.BRIGHTNESS),
-    ...featureKeys(record, C.SHUTTER, T.SHUTTER.POSITION),
-    ...featureKeys(record, C.ENERGY_SENSOR, T.ENERGY_SENSOR.POWER),
-    ...featureKeys(record, C.TEMPERATURE_SENSOR),
-    ...featureKeys(record, C.HUMIDITY_SENSOR),
-    ...featureKeys(record, C.FAN),
+    ...featureKeys(features, C.SWITCH, T.SWITCH.BINARY),
+    ...featureKeys(features, C.LIGHT, T.LIGHT.BINARY),
+    ...featureKeys(features, C.LIGHT, T.LIGHT.BRIGHTNESS),
+    ...featureKeys(features, C.SHUTTER, T.SHUTTER.POSITION),
+    ...featureKeys(features, C.ENERGY_SENSOR, T.ENERGY_SENSOR.POWER),
+    ...featureKeys(features, C.TEMPERATURE_SENSOR),
+    ...featureKeys(features, C.HUMIDITY_SENSOR),
+    ...featureKeys(features, C.FAN),
   ].slice(0, 4);
 
   const tiles = tileKeys.map((key) => ({
     type: 'value',
-    label: truncate(record.features[key].name, 24),
+    label: truncate(features[key].name, 24),
     device_feature: ids.feature(key),
   }));
 
@@ -231,7 +234,7 @@ function deviceContent(manager, record) {
       action: { key: ACTION_KEYS.TOGGLE, params: { device: ids.device, power: firstPower } },
     });
   }
-  if (record.ctx?.isLight) {
+  if (lightRelayKeys(manager.effectiveFeatures(record)).length > 0) {
     buttons.push({
       type: 'button',
       label: t('Identify', 'Identifier', 'Identifizieren', 'Identificar'),

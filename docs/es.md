@@ -122,12 +122,35 @@ Mientras tanto, las dos integraciones pueden funcionar en paralelo.
      los demás llegaban como interruptor. Esta integración reconoce la luz: asocie _Switch_ con
      _Light_.
 
+   Consejo: antes de migrar, dé a cada relé el tipo que tenía en la integración nativa con la
+   acción **Personalizar una función**: entonces se asocia automáticamente.
+
    Una función sin asociar pierde su historial, y las escenas que la usan deben modificarse.
 
 6. Con un historial grande, la migración tarda unos minutos: sígala en **Configuración → Tareas**. Si se interrumpe, vuelva a lanzarla: solo mueve lo que queda.
 
 Una vez migrados todos los dispositivos, la integración Tasmota nativa ya no tiene ningún
 dispositivo.
+
+## Cambiar el nombre de una función, convertir un relé en interruptor o luz
+
+Gladys permite cambiar el nombre de un dispositivo, no el de sus funciones. La acción
+**Personalizar una función** de la pantalla de configuración hace lo que hacía la página de
+edición de la integración nativa:
+
+- **Dispositivo**: el dispositivo que personalizar.
+- **Función**: su nombre actual (`Switch 2`, `Power`…) o, para un relé, su número (`2`).
+- **Nuevo nombre**: vacío, el nombre no cambia; `-` vuelve al nombre por defecto.
+- **Tipo** (solo relés): _Interruptor_, _Luz_ o _Automático_ para seguir lo que indica Tasmota.
+
+Es la misma función, solo redefinida: se conservan su historial y las escenas y paneles que la
+usan. Gladys aplica un cambio de tipo con el botón **Actualizar** que aparece entonces en el
+dispositivo, en la pestaña **Descubrimiento**. Gladys solo ofrece ese botón para un cambio de tipo:
+un nombre nuevo por sí solo se aplica en la próxima actualización del dispositivo, o al añadirlo.
+
+Un dispositivo configurado en Tasmota con `SetOption30 1` (la forma de Tasmota de decir «mis relés
+controlan luces») publica sus relés como luces, salvo que los haya personalizado. Un relé
+convertido en luz se puede identificar (parpadea dos veces) como las bombillas.
 
 ## Acciones de la pantalla de configuración
 
@@ -140,6 +163,8 @@ dispositivo.
 - **Enviar un comando** — cualquier comando Tasmota, la respuesta aparece bajo el botón.
 - **Reiniciar un dispositivo**.
 - **Pasar un dispositivo a MQTT** — envía `MqttHost`, `MqttPort`, `MqttUser`, `MqttPassword`.
+- **Personalizar una función** — cambiar el nombre de una función, convertir un relé en
+  interruptor o luz (ver arriba).
 
 ## Escenas
 

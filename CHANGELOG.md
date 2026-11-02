@@ -10,6 +10,17 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Added
+
+- "Customize a feature" action, like the edit page of the native Tasmota
+  integration: rename any feature, make a relay a switch or a light (or back to
+  what Tasmota reports). The feature stays the same, so its history, scenes and
+  dashboards are kept; a type change is applied with the Update button of the
+  Discovery tab. Customizations are kept in /data.
+- A device set with `SetOption30 1` in Tasmota publishes its relays as lights.
+- A relay made a light can be identified (it blinks), from the action, the
+  scene action and the device widget.
+
 ## [1.1.0] - 2026-10-26
 
 ### Changed

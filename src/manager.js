@@ -29,6 +29,12 @@ import {
   readOnOff,
 } from './tasmota/features.js';
 import { extractEvents, TRIGGERS } from './tasmota/events.js';
+import {
+  applyOverrides,
+  lightRelayKeys,
+  nextOverride,
+  resolveFeatureKey,
+} from './tasmota/customize.js';
 import { formatMac, isStatusComplete, normalizeMac, parseStatus } from './tasmota/status.js';
 import {
   DISCOVERY_TOPIC,
@@ -335,7 +341,7 @@ export class TasmotaManager {
       external_id: ids.device,
       model: record.model || 'Tasmota',
       params,
-      features: Object.entries(record.features).map(([key, spec]) => ({
+      features: Object.entries(this.effectiveFeatures(record)).map(([key, spec]) => ({
         ...spec,
         external_id: ids.feature(key),
       })),
@@ -347,6 +353,11 @@ export class TasmotaManager {
       device.poll_frequency = DEVICE_POLL_FREQUENCIES.EVERY_10_SECONDS;
     }
     return device;
+  }
+
+  /** The features as published: the specs with the user's customizations. */
+  effectiveFeatures(record) {
+    return applyOverrides(record.features, record.overrides, record.discovery);
   }
 
   buildDiscoveredDevices() {
@@ -917,11 +928,12 @@ export class TasmotaManager {
    */
   async identify(externalId) {
     const record = this.requireRecord(externalId);
-    const powerKey = record.ctx?.lightPowerKey;
-    if (!record.ctx?.isLight || !powerKey) {
+    // The relays published as lights: detected, SetOption30 or customized.
+    const [powerKey] = lightRelayKeys(this.effectiveFeatures(record));
+    if (!powerKey) {
       return false;
     }
-    const power = powerKey.replace(/^POWER/i, 'Power');
+    const power = powerKey.replace(/^power/, 'Power');
     const toggle = `${power} TOGGLE`;
     await this.command(
       record,
@@ -929,6 +941,44 @@ export class TasmotaManager {
       [toggle, 'Delay 5', toggle, 'Delay 5', toggle, 'Delay 5', toggle].join('; '),
     );
     return true;
+  }
+
+  /**
+   * Rename a feature and/or make a relay a switch or a light (the native
+   * integration's feature editing). The override is kept in /data and applied
+   * at every publication; the feature key, hence its history, never changes.
+   * @param {string} externalId device external id
+   * @param {{ feature: string, name?: string, type?: string }} request
+   * @returns {Promise<{ key: string, before: object, after: object, created: boolean }>}
+   * @throws {Error} with `code` 'feature-unknown' | 'type-not-relay' | 'type-invalid'
+   */
+  async customizeFeature(externalId, { feature, name, type }) {
+    const record = this.requireRecord(externalId);
+    const before = this.effectiveFeatures(record);
+    const key = resolveFeatureKey(before, feature);
+    if (!key) {
+      throw Object.assign(new Error(`Unknown feature: ${feature}`), {
+        code: 'feature-unknown',
+        available: Object.values(before).map((spec) => spec.name),
+      });
+    }
+    const overrides = { ...(record.overrides ?? {}) };
+    const { override, error } = nextOverride(key, overrides[key], { name, type });
+    if (error) {
+      throw Object.assign(new Error(`Cannot customize ${key}: ${error}`), { code: error });
+    }
+    if (override) {
+      overrides[key] = override;
+    } else {
+      delete overrides[key];
+    }
+    record.overrides = overrides;
+    await this.save();
+    await this.publishDevices();
+    const created = (this.gladys.devices ?? []).some(
+      (device) => device.external_id === this.ids(record.mac).device,
+    );
+    return { key, before: before[key], after: this.effectiveFeatures(record)[key], created };
   }
 
   /** Turn a relay on for `seconds`, then off (Backlog + Delay, on the device). */

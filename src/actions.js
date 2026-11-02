@@ -6,7 +6,7 @@
 // multi-language message is shown under the button, a thrown error too.
 // -----------------------------------------------------------------------------
 
-import { createLogger } from '@gladysassistant/integration-sdk';
+import { createLogger, DEVICE_FEATURE_CATEGORIES } from '@gladysassistant/integration-sdk';
 import { BROKER_DEVICE_USER, brokerHostPort } from './broker.js';
 import { MQTT_MODES } from './config.js';
 import { expandAddresses, isValidAddress } from './transports/http.js';
@@ -50,6 +50,56 @@ function scanMessage({ found, authRequired }) {
     ` Se requiere contraseña web para: ${list}.`,
   );
   return mapText(base, (text, lang) => `${text}${auth[lang]}`);
+}
+
+const KIND_LABELS = {
+  [DEVICE_FEATURE_CATEGORIES.LIGHT]: t('light', 'lampe', 'Lampe', 'luz'),
+  [DEVICE_FEATURE_CATEGORIES.SWITCH]: t('switch', 'interrupteur', 'Schalter', 'interruptor'),
+};
+
+/** Message of the customize_feature action: what changed, and how it reaches Gladys. */
+export function customizeMessage({ before, after, created }) {
+  const renamed = before.name !== after.name;
+  const retyped = before.category !== after.category;
+  if (!renamed && !retyped) {
+    return t(
+      `Nothing changed: "${after.name}" already has these settings.`,
+      `Rien n'a changé : « ${after.name} » a déjà ces réglages.`,
+      `Nichts geändert: „${after.name}“ hat diese Einstellungen bereits.`,
+      `Nada ha cambiado: «${after.name}» ya tiene estos ajustes.`,
+    );
+  }
+  const kind = KIND_LABELS[after.category];
+  const what = t(
+    `"${before.name}" is now "${after.name}"${retyped ? ` (${kind.en})` : ''}.`,
+    `« ${before.name} » devient « ${after.name} »${retyped ? ` (${kind.fr})` : ''}.`,
+    `„${before.name}“ heißt jetzt „${after.name}“${retyped ? ` (${kind.de})` : ''}.`,
+    `«${before.name}» pasa a ser «${after.name}»${retyped ? ` (${kind.es})` : ''}.`,
+  );
+  let next;
+  if (!created) {
+    next = t(
+      'It applies when you add the device from the Discovery tab.',
+      "Le changement s'appliquera quand vous ajouterez l'appareil depuis l'onglet Découverte.",
+      'Es gilt, sobald Sie das Gerät im Reiter Erkennung hinzufügen.',
+      'Se aplicará cuando añada el dispositivo desde la pestaña Descubrimiento.',
+    );
+  } else if (retyped) {
+    next = t(
+      'Open the Discovery tab and click Update on this device: history and scenes are kept.',
+      "Ouvrez l'onglet Découverte et cliquez sur Mettre à jour sur cet appareil : l'historique et les scènes sont conservés.",
+      'Öffnen Sie den Reiter Erkennung und klicken Sie bei diesem Gerät auf Aktualisieren: Verlauf und Szenen bleiben erhalten.',
+      'Abra la pestaña Descubrimiento y pulse Actualizar en este dispositivo: se conservan el historial y las escenas.',
+    );
+  } else {
+    next = t(
+      'Gladys only offers Update for a type change: the new name applies at the next Update of this device.',
+      "Gladys ne propose Mettre à jour que pour un changement de type : le nouveau nom s'appliquera à la prochaine mise à jour de cet appareil.",
+      'Gladys bietet Aktualisieren nur bei einer Typänderung an: Der neue Name gilt bei der nächsten Aktualisierung dieses Geräts.',
+      'Gladys solo ofrece Actualizar para un cambio de tipo: el nuevo nombre se aplicará en la próxima actualización de este dispositivo.',
+    );
+  }
+  return mapText(what, (text, lang) => `${text} ${next[lang]}`);
 }
 
 export const ACTIONS = {
@@ -190,5 +240,36 @@ export const ACTIONS = {
       `Broker ${host}:${port} gesendet: Das Gerät startet neu und verbindet sich.`,
       `Broker ${host}:${port} enviado: el dispositivo se reinicia y se conecta.`,
     );
+  },
+
+  async customize_feature(manager, { fields }) {
+    try {
+      return customizeMessage(
+        await manager.customizeFeature(fields.device, {
+          feature: fields.feature,
+          name: fields.name,
+          type: fields.type,
+        }),
+      );
+    } catch (err) {
+      if (err.code === 'feature-unknown') {
+        const list = err.available.join(', ');
+        return t(
+          `No feature "${fields.feature}" on this device. Its features: ${list}.`,
+          `Aucune fonctionnalité « ${fields.feature} » sur cet appareil. Ses fonctionnalités : ${list}.`,
+          `Keine Funktion „${fields.feature}“ an diesem Gerät. Seine Funktionen: ${list}.`,
+          `No hay ninguna función «${fields.feature}» en este dispositivo. Sus funciones: ${list}.`,
+        );
+      }
+      if (err.code === 'type-not-relay') {
+        return t(
+          'Only a relay can become a switch or a light: leave the type on "Unchanged" for this feature.',
+          'Seul un relais peut devenir interrupteur ou lampe : laissez le type sur « Inchangé » pour cette fonctionnalité.',
+          'Nur ein Relais kann Schalter oder Lampe werden: Lassen Sie den Typ für diese Funktion auf „Unverändert“.',
+          'Solo un relé puede ser interruptor o luz: deje el tipo en «Sin cambios» para esta función.',
+        );
+      }
+      throw err;
+    }
   },
 };

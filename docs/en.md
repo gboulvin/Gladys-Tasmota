@@ -114,11 +114,33 @@ Until then, both integrations can run side by side.
      the others came in as a switch. This integration recognises the light: pair _Switch_ with
      _Light_.
 
+   Tip: before migrating, give each relay the type it had in the native integration with the
+   **Customize a feature** action: it is then paired automatically.
+
    A feature left unpaired loses its history, and the scenes that use it must be edited.
 
 6. On a large history the migration takes a few minutes: follow it in **Settings → Tasks**. If it stops, run it again: it only moves what is left.
 
 Once every device is migrated, the native Tasmota integration has no device left.
+
+## Rename a feature, make a relay a switch or a light
+
+Gladys lets you rename a device, not its features. The **Customize a feature** action of the
+Configuration screen does what the edit page of the native integration did:
+
+- **Device**: the device to customize.
+- **Feature**: its current name (`Switch 2`, `Power`…) or, for a relay, its number (`2`).
+- **New name**: left empty, the name does not change; `-` brings the default name back.
+- **Type** (relays only): _Switch_, _Light_, or _Automatic_ to follow what Tasmota reports.
+
+It is the same feature, only redefined: its history, the scenes and the dashboards that use it are
+kept. A type change is applied by Gladys through the **Update** button that then shows on the
+device in the **Discovery** tab. Gladys offers that button for a type change only: a new name alone
+applies at the next update of the device, or when you add it.
+
+A device set in Tasmota with `SetOption30 1` (the Tasmota way of saying "my relays drive lights")
+publishes its relays as lights, unless you customized them. A relay made a light can be
+identified (it blinks twice) like the bulbs.
 
 ## Actions of the Configuration screen
 
@@ -130,6 +152,7 @@ Once every device is migrated, the native Tasmota integration has no device left
 - **Send a command** — any Tasmota command, the answer is shown under the button.
 - **Restart a device**.
 - **Move a device to MQTT** — sends `MqttHost`, `MqttPort`, `MqttUser`, `MqttPassword`.
+- **Customize a feature** — rename a feature, make a relay a switch or a light (see above).
 
 ## Scenes
 

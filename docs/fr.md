@@ -123,12 +123,37 @@ D'ici là, les deux intégrations peuvent fonctionner côte à côte.
      modules de lampe, les autres arrivaient comme interrupteur. Cette intégration reconnaît la
      lampe : associez _Switch_ à _Light_.
 
+   Astuce : avant de migrer, donnez à chaque relais le type qu'il avait dans l'intégration du cœur
+   avec l'action **Personnaliser une fonctionnalité** : il est alors associé automatiquement.
+
    Une fonctionnalité laissée sans association perd son historique, et les scènes qui l'utilisent
    sont à modifier.
 
 6. Sur un gros historique, la migration prend quelques minutes : suivez-la dans **Paramètres → Tâches**. Si elle s'interrompt, relancez-la : elle ne déplace que ce qui reste.
 
 Une fois tous les appareils migrés, l'intégration Tasmota du cœur n'a plus aucun appareil.
+
+## Renommer une fonctionnalité, faire d'un relais un interrupteur ou une lampe
+
+Gladys permet de renommer un appareil, pas ses fonctionnalités. L'action **Personnaliser une
+fonctionnalité** de l'écran de configuration fait ce que faisait la page d'édition de
+l'intégration du cœur :
+
+- **Appareil** : l'appareil à personnaliser.
+- **Fonctionnalité** : son nom actuel (`Switch 2`, `Power`…) ou, pour un relais, son numéro (`2`).
+- **Nouveau nom** : laissé vide, le nom ne change pas ; `-` remet le nom par défaut.
+- **Type** (relais uniquement) : _Interrupteur_, _Lampe_, ou _Automatique_ pour suivre ce
+  qu'indique Tasmota.
+
+C'est la même fonctionnalité, simplement redéfinie : son historique, les scènes et les tableaux de
+bord qui l'utilisent sont conservés. Gladys applique un changement de type via le bouton **Mettre à
+jour** qui apparaît alors sur l'appareil dans l'onglet **Découverte**. Gladys ne propose ce bouton
+que pour un changement de type : un nouveau nom seul s'applique à la prochaine mise à jour de
+l'appareil, ou quand vous l'ajoutez.
+
+Un appareil réglé dans Tasmota avec `SetOption30 1` (la façon Tasmota de dire « mes relais pilotent
+des lampes ») publie ses relais comme lampes, sauf si vous les avez personnalisés. Un relais devenu
+lampe peut être identifié (il clignote deux fois) comme les ampoules.
 
 ## Actions de l'écran de configuration
 
@@ -142,6 +167,8 @@ Une fois tous les appareils migrés, l'intégration Tasmota du cœur n'a plus au
   bouton.
 - **Redémarrer un appareil**.
 - **Passer un appareil en MQTT** — envoie `MqttHost`, `MqttPort`, `MqttUser`, `MqttPassword`.
+- **Personnaliser une fonctionnalité** — renommer une fonctionnalité, faire d'un relais un
+  interrupteur ou une lampe (voir ci-dessus).
 
 ## Scènes
 

@@ -686,6 +686,118 @@
           }
         }
       ]
+    },
+    {
+      "key": "customize_feature",
+      "label": {
+        "en": "Customize a feature",
+        "fr": "Personnaliser une fonctionnalité",
+        "de": "Funktion anpassen",
+        "es": "Personalizar una función"
+      },
+      "description": {
+        "en": "Rename a feature, or make a relay a switch or a light. History and scenes are kept: the feature stays the same.",
+        "fr": "Renommez une fonctionnalité, ou faites d'un relais un interrupteur ou une lampe. L'historique et les scènes sont conservés : la fonctionnalité reste la même.",
+        "de": "Benennen Sie eine Funktion um oder machen Sie aus einem Relais einen Schalter oder eine Lampe. Verlauf und Szenen bleiben erhalten: Die Funktion bleibt dieselbe.",
+        "es": "Cambie el nombre de una función o convierta un relé en interruptor o luz. Se conservan el historial y las escenas: la función sigue siendo la misma."
+      },
+      "timeout_seconds": 15,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          }
+        },
+        {
+          "key": "feature",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "Feature: its name, or the relay number",
+            "fr": "Fonctionnalité : son nom, ou le numéro du relais",
+            "de": "Funktion: ihr Name oder die Relaisnummer",
+            "es": "Función: su nombre o el número del relé"
+          },
+          "placeholder": {
+            "en": "e.g. Switch 2, or 2",
+            "fr": "ex. Switch 2, ou 2",
+            "de": "z. B. Switch 2 oder 2",
+            "es": "p. ej. Switch 2, o 2"
+          }
+        },
+        {
+          "key": "name",
+          "type": "string",
+          "label": {
+            "en": "New name (empty: unchanged, - : default name)",
+            "fr": "Nouveau nom (vide : inchangé, - : nom par défaut)",
+            "de": "Neuer Name (leer: unverändert, - : Standardname)",
+            "es": "Nuevo nombre (vacío: sin cambios, - : nombre por defecto)"
+          },
+          "placeholder": {
+            "en": "e.g. Living room lamp",
+            "fr": "ex. Lampe du salon",
+            "de": "z. B. Wohnzimmerlampe",
+            "es": "p. ej. Lámpara del salón"
+          }
+        },
+        {
+          "key": "type",
+          "type": "select",
+          "default": "unchanged",
+          "label": {
+            "en": "Type (relays only)",
+            "fr": "Type (relais uniquement)",
+            "de": "Typ (nur Relais)",
+            "es": "Tipo (solo relés)"
+          },
+          "options": [
+            {
+              "value": "unchanged",
+              "label": {
+                "en": "Unchanged",
+                "fr": "Inchangé",
+                "de": "Unverändert",
+                "es": "Sin cambios"
+              }
+            },
+            {
+              "value": "switch",
+              "label": {
+                "en": "Switch",
+                "fr": "Interrupteur",
+                "de": "Schalter",
+                "es": "Interruptor"
+              }
+            },
+            {
+              "value": "light",
+              "label": {
+                "en": "Light",
+                "fr": "Lampe",
+                "de": "Lampe",
+                "es": "Luz"
+              }
+            },
+            {
+              "value": "auto",
+              "label": {
+                "en": "Automatic (as reported by Tasmota)",
+                "fr": "Automatique (selon Tasmota)",
+                "de": "Automatisch (laut Tasmota)",
+                "es": "Automático (según Tasmota)"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "scene_triggers": [

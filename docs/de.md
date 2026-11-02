@@ -121,6 +121,9 @@ Bis dahin können beide Integrationen nebeneinander laufen.
      Lampenmodule, die anderen kamen als Schalter an. Diese Integration erkennt die Lampe: Ordnen
      Sie _Switch_ der _Light_ zu.
 
+   Tipp: Geben Sie vor der Migration jedem Relais mit der Aktion **Funktion anpassen** den Typ,
+   den es in der integrierten Integration hatte: Dann wird es automatisch zugeordnet.
+
    Eine nicht zugeordnete Funktion verliert ihren Verlauf, und die Szenen, die sie nutzen, müssen
    angepasst werden.
 
@@ -129,6 +132,27 @@ Bis dahin können beide Integrationen nebeneinander laufen.
    verschiebt nur, was übrig ist.
 
 Sind alle Geräte migriert, hat die integrierte Tasmota-Integration kein Gerät mehr.
+
+## Funktion umbenennen, Relais zu Schalter oder Lampe machen
+
+Gladys erlaubt, ein Gerät umzubenennen, nicht seine Funktionen. Die Aktion **Funktion anpassen**
+der Konfigurationsseite übernimmt, was die Bearbeitungsseite der integrierten Integration bot:
+
+- **Gerät**: das anzupassende Gerät.
+- **Funktion**: ihr aktueller Name (`Switch 2`, `Power`…) oder, bei einem Relais, seine Nummer
+  (`2`).
+- **Neuer Name**: leer bleibt der Name unverändert; `-` stellt den Standardnamen wieder her.
+- **Typ** (nur Relais): _Schalter_, _Lampe_ oder _Automatisch_, um Tasmota zu folgen.
+
+Es bleibt dieselbe Funktion, nur neu definiert: Ihr Verlauf sowie die Szenen und Dashboards, die
+sie nutzen, bleiben erhalten. Eine Typänderung übernimmt Gladys über den Button **Aktualisieren**,
+der dann am Gerät im Reiter **Erkennung** erscheint. Gladys bietet diesen Button nur bei einer
+Typänderung an: Ein neuer Name allein gilt bei der nächsten Aktualisierung des Geräts oder beim
+Hinzufügen.
+
+Ein in Tasmota mit `SetOption30 1` eingestelltes Gerät (die Tasmota-Art zu sagen „meine Relais
+steuern Lampen“) meldet seine Relais als Lampen, außer Sie haben sie angepasst. Ein zur Lampe
+gemachtes Relais lässt sich wie die Leuchtmittel identifizieren (es blinkt zweimal).
 
 ## Aktionen der Konfigurationsseite
 
@@ -141,6 +165,8 @@ Sind alle Geräte migriert, hat die integrierte Tasmota-Integration kein Gerät 
 - **Befehl senden** — beliebiger Tasmota-Befehl, die Antwort erscheint unter der Schaltfläche.
 - **Gerät neu starten**.
 - **Gerät auf MQTT umstellen** — sendet `MqttHost`, `MqttPort`, `MqttUser`, `MqttPassword`.
+- **Funktion anpassen** — eine Funktion umbenennen, ein Relais zu Schalter oder Lampe machen
+  (siehe oben).
 
 ## Szenen
 
