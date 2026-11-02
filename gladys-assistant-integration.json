@@ -1197,6 +1197,82 @@
       ]
     },
     {
+      "key": "rfid_tag_read",
+      "label": {
+        "en": "RFID badge read",
+        "fr": "Badge RFID lu",
+        "de": "RFID-Karte gelesen",
+        "es": "Tarjeta RFID leída"
+      },
+      "description": {
+        "en": "A badge or tag read by an RC522, PN532, RDM6300 or Wiegand reader.",
+        "fr": "Un badge ou une étiquette lu par un lecteur RC522, PN532, RDM6300 ou Wiegand.",
+        "de": "Eine Karte oder ein Tag, gelesen von einem RC522-, PN532-, RDM6300- oder Wiegand-Leser.",
+        "es": "Una tarjeta o etiqueta leída por un lector RC522, PN532, RDM6300 o Wiegand."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Reader",
+            "fr": "Lecteur",
+            "de": "Leser",
+            "es": "Lector"
+          }
+        },
+        {
+          "key": "uid",
+          "type": "string",
+          "label": {
+            "en": "Badge UID",
+            "fr": "UID du badge",
+            "de": "Karten-UID",
+            "es": "UID de la tarjeta"
+          },
+          "placeholder": {
+            "en": "e.g. BA839D07",
+            "fr": "ex. BA839D07",
+            "de": "z. B. BA839D07",
+            "es": "p. ej. BA839D07"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "uid",
+          "type": "string",
+          "label": {
+            "en": "Badge UID",
+            "fr": "UID du badge",
+            "de": "Karten-UID",
+            "es": "UID de la tarjeta"
+          }
+        },
+        {
+          "key": "data",
+          "type": "string",
+          "label": {
+            "en": "Data read on the badge",
+            "fr": "Données lues sur le badge",
+            "de": "Auf der Karte gelesene Daten",
+            "es": "Datos leídos en la tarjeta"
+          }
+        },
+        {
+          "key": "reader",
+          "type": "string",
+          "label": {
+            "en": "Reader type",
+            "fr": "Type de lecteur",
+            "de": "Lesertyp",
+            "es": "Tipo de lector"
+          }
+        }
+      ]
+    },
+    {
       "key": "availability_changed",
       "label": {
         "en": "Tasmota device online / offline",

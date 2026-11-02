@@ -20,7 +20,8 @@ y sensores. Sin nube.
   índice UV, humedad del suelo, entradas analógicas, contadores de impulsos, entradas de
   interruptor, temperatura del chip, señal Wi-Fi y tiempo activo.
 - **Disparadores de escena**: botón pulsado (simple, doble, triple… mantenido), entrada de
-  interruptor cambiada, código RF recibido (Sonoff RF Bridge), código IR recibido, dispositivo en
+  interruptor cambiada, código RF recibido (Sonoff RF Bridge), código IR recibido, **tarjeta RFID leída** (RC522,
+  PN532, RDM6300, Wiegand), dispositivo en
   línea / desconectado.
 - **Acciones de escena**: enviar cualquier comando Tasmota (Backlog, RfSend, IRSend, Rule…),
   encender un relé un tiempo, hacer parpadear una luz, reiniciar un dispositivo.
@@ -170,13 +171,20 @@ convertido en luz se puede identificar (parpadea dos veces) como las bombillas.
 
 En la categoría **Integraciones** del editor de escenas (Gladys 5.1 o posterior):
 
-| Disparador                                  | Ajuste de Tasmota necesario                                | Variables          |
-| ------------------------------------------- | ---------------------------------------------------------- | ------------------ |
-| Botón Tasmota pulsado                       | `SetOption73 1` (botones desacoplados de los relés)        | `button`, `action` |
-| Entrada de interruptor Tasmota cambiada     | `SetOption114 1` (interruptores desacoplados de los relés) | `switch`, `action` |
-| Código RF recibido                          | un RF Bridge (`RfReceived`)                                | `code`, `rf_key`   |
-| Código IR recibido                          | un receptor IR (`IrReceived`)                              | `code`, `protocol` |
-| Dispositivo Tasmota en línea / desconectado | ninguno (LWT por MQTT, lecturas fallidas por HTTP)         | `status`           |
+| Disparador                                  | Ajuste de Tasmota necesario                                | Variables               |
+| ------------------------------------------- | ---------------------------------------------------------- | ----------------------- |
+| Botón Tasmota pulsado                       | `SetOption73 1` (botones desacoplados de los relés)        | `button`, `action`      |
+| Entrada de interruptor Tasmota cambiada     | `SetOption114 1` (interruptores desacoplados de los relés) | `switch`, `action`      |
+| Código RF recibido                          | un RF Bridge (`RfReceived`)                                | `code`, `rf_key`        |
+| Código IR recibido                          | un receptor IR (`IrReceived`)                              | `code`, `protocol`      |
+| Tarjeta RFID leída                          | un lector RC522, PN532, RDM6300 o Wiegand                  | `uid`, `data`, `reader` |
+| Dispositivo Tasmota en línea / desconectado | ninguno (LWT por MQTT, lecturas fallidas por HTTP)         | `status`                |
+
+Un lector RFID recibe también una función de texto **Last badge (RC522)** (la última tarjeta leída, con el nombre del lector), que se añade a su
+dispositivo en la primera lectura (pulse **Actualizar** en la pestaña Descubrimiento). El UID va en
+mayúsculas (`BA839D07`): escríbalo así en el filtro. El RC522 necesita un Tasmota compilado con
+`USE_RC522` (`Data` y `Type` necesitan `USE_RC522_DATA_FUNCTION` y
+`USE_RC522_TYPE_INFORMATION`).
 
 Cada filtro es opcional: vacío, acepta todo. Lea los valores en las acciones siguientes con
 `{{triggerEvent.data.code}}`, por ejemplo.

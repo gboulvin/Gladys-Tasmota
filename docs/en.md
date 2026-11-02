@@ -18,7 +18,8 @@ relays, bulbs and LED strips, dimmers, shutters, fans, energy meters and sensors
   UV index, soil moisture, analog inputs, pulse counters, switch inputs, chip temperature, Wi-Fi
   signal and uptime.
 - **Scene triggers**: button pressed (single, double, triple… hold), switch input changed,
-  RF code received (Sonoff RF Bridge), IR code received, device online / offline.
+  RF code received (Sonoff RF Bridge), IR code received, **RFID badge read** (RC522, PN532,
+  RDM6300, Wiegand), device online / offline.
 - **Scene actions**: send any Tasmota command (Backlog, RfSend, IRSend, Rule…), turn a relay on
   for a while, make a light blink, restart a device.
 - **Dashboard widgets**: fleet overview, device card, energy card.
@@ -158,13 +159,19 @@ identified (it blinks twice) like the bulbs.
 
 Under the **Integrations** category of the scene editor (Gladys 5.1 or later):
 
-| Trigger                         | Tasmota setting needed                                | Variables          |
-| ------------------------------- | ----------------------------------------------------- | ------------------ |
-| Tasmota button pressed          | `SetOption73 1` (buttons decoupled from the relays)   | `button`, `action` |
-| Tasmota switch input changed    | `SetOption114 1` (switches decoupled from the relays) | `switch`, `action` |
-| RF code received                | an RF Bridge (`RfReceived`)                           | `code`, `rf_key`   |
-| IR code received                | an IR receiver (`IrReceived`)                         | `code`, `protocol` |
-| Tasmota device online / offline | none (LWT over MQTT, failed polls over HTTP)          | `status`           |
+| Trigger                         | Tasmota setting needed                                | Variables               |
+| ------------------------------- | ----------------------------------------------------- | ----------------------- |
+| Tasmota button pressed          | `SetOption73 1` (buttons decoupled from the relays)   | `button`, `action`      |
+| Tasmota switch input changed    | `SetOption114 1` (switches decoupled from the relays) | `switch`, `action`      |
+| RF code received                | an RF Bridge (`RfReceived`)                           | `code`, `rf_key`        |
+| IR code received                | an IR receiver (`IrReceived`)                         | `code`, `protocol`      |
+| RFID badge read                 | an RC522, PN532, RDM6300 or Wiegand reader            | `uid`, `data`, `reader` |
+| Tasmota device online / offline | none (LWT over MQTT, failed polls over HTTP)          | `status`                |
+
+An RFID reader also gets a **Last badge (RC522)** text feature (named after the reader), added to its device on the first read
+(click **Update** in the Discovery tab). The UID is upper-case (`BA839D07`): type it that way in
+the filter. The RC522 needs a Tasmota build with `USE_RC522` (`Data` and `Type` need
+`USE_RC522_DATA_FUNCTION` and `USE_RC522_TYPE_INFORMATION`).
 
 Every filter is optional: left empty, it matches everything. Read the values in the next actions
 with `{{triggerEvent.data.code}}`, for instance.

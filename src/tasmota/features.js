@@ -17,6 +17,7 @@
 // `buildCommand` goes the other way: a Gladys value -> a Tasmota command.
 // -----------------------------------------------------------------------------
 
+import { normalizeUid, RFID_READERS } from './events.js';
 import {
   DEVICE_FEATURE_CATEGORIES as C,
   DEVICE_FEATURE_TYPES as T,
@@ -463,6 +464,20 @@ function sensorReadings(sensors, ctx) {
     }
     if (/^Shutter\d+$/.test(name) && content && typeof content === 'object') {
       readings.push(...shutterReadings(name, content));
+      continue;
+    }
+    // RFID / NFC readers: the last badge read, as a text feature (the read
+    // itself is a scene event, see events.js).
+    if (RFID_READERS.includes(name) && content && content.UID !== undefined && content.UID !== '') {
+      readings.push({
+        key: `${slug(name)}-uid`,
+        spec: feature(`Last badge (${name})`, C.TEXT, T.TEXT.TEXT, {
+          keep_history: false,
+          min: undefined,
+          max: undefined,
+        }),
+        text: normalizeUid(content.UID),
+      });
       continue;
     }
     // Switch inputs reported in the sensors (SwitchMode + SwitchTopic 0).

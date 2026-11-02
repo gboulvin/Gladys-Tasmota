@@ -20,7 +20,8 @@ Sensoren. Keine Cloud.
   Entfernung, UV-Index, Bodenfeuchte, Analogeingänge, Impulszähler, Schaltereingänge,
   Chiptemperatur, WLAN-Signal und Laufzeit.
 - **Szenen-Auslöser**: Taste gedrückt (einfach, doppelt, dreifach… halten), Schaltereingang
-  geändert, RF-Code empfangen (Sonoff RF Bridge), IR-Code empfangen, Gerät online / offline.
+  geändert, RF-Code empfangen (Sonoff RF Bridge), IR-Code empfangen, **RFID-Karte gelesen** (RC522,
+  PN532, RDM6300, Wiegand), Gerät online / offline.
 - **Szenen-Aktionen**: beliebigen Tasmota-Befehl senden (Backlog, RfSend, IRSend, Rule…), ein
   Relais zeitweise einschalten, eine Lampe blinken lassen, ein Gerät neu starten.
 - **Dashboard-Widgets**: Geräteübersicht, Gerätekarte, Energiekarte.
@@ -172,13 +173,20 @@ gemachtes Relais lässt sich wie die Leuchtmittel identifizieren (es blinkt zwei
 
 In der Kategorie **Integrationen** des Szeneneditors (Gladys 5.1 oder neuer):
 
-| Auslöser                         | Nötige Tasmota-Einstellung                              | Variablen          |
-| -------------------------------- | ------------------------------------------------------- | ------------------ |
-| Tasmota-Taste gedrückt           | `SetOption73 1` (Tasten von den Relais entkoppelt)      | `button`, `action` |
-| Tasmota-Schaltereingang geändert | `SetOption114 1` (Schalter von den Relais entkoppelt)   | `switch`, `action` |
-| RF-Code empfangen                | eine RF Bridge (`RfReceived`)                           | `code`, `rf_key`   |
-| IR-Code empfangen                | ein IR-Empfänger (`IrReceived`)                         | `code`, `protocol` |
-| Tasmota-Gerät online / offline   | keine (LWT per MQTT, fehlgeschlagene Abfragen per HTTP) | `status`           |
+| Auslöser                         | Nötige Tasmota-Einstellung                              | Variablen               |
+| -------------------------------- | ------------------------------------------------------- | ----------------------- |
+| Tasmota-Taste gedrückt           | `SetOption73 1` (Tasten von den Relais entkoppelt)      | `button`, `action`      |
+| Tasmota-Schaltereingang geändert | `SetOption114 1` (Schalter von den Relais entkoppelt)   | `switch`, `action`      |
+| RF-Code empfangen                | eine RF Bridge (`RfReceived`)                           | `code`, `rf_key`        |
+| IR-Code empfangen                | ein IR-Empfänger (`IrReceived`)                         | `code`, `protocol`      |
+| RFID-Karte gelesen               | ein RC522-, PN532-, RDM6300- oder Wiegand-Leser         | `uid`, `data`, `reader` |
+| Tasmota-Gerät online / offline   | keine (LWT per MQTT, fehlgeschlagene Abfragen per HTTP) | `status`                |
+
+Ein RFID-Leser erhält außerdem eine Textfunktion **Last badge (RC522)** (die zuletzt gelesene Karte, nach dem Leser benannt), die beim ersten Lesen zu seinem
+Gerät hinzukommt (klicken Sie im Reiter Erkennung auf **Aktualisieren**). Die UID ist in
+Großbuchstaben (`BA839D07`): Geben Sie sie so im Filter ein. Der RC522 braucht ein mit
+`USE_RC522` kompiliertes Tasmota (`Data` und `Type` brauchen `USE_RC522_DATA_FUNCTION` und
+`USE_RC522_TYPE_INFORMATION`).
 
 Jeder Filter ist optional: Leer gelassen passt er auf alles. Lesen Sie die Werte in den folgenden
 Aktionen z. B. mit `{{triggerEvent.data.code}}`.

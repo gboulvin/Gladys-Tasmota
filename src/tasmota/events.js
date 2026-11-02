@@ -4,7 +4,8 @@
 // Some Tasmota messages say "this happened" rather than "this is the state":
 // a button pressed (SetOption73 1, or a ButtonTopic), a switch toggled with
 // SetOption114 1, an RF code received by a Sonoff RF Bridge, an IR code
-// received by an IR receiver. They become scene events (manifest
+// received by an IR receiver, a badge read by an RFID / NFC reader (RC522,
+// PN532, RDM6300, Wiegand). They become scene events (manifest
 // `scene_triggers`), never states. PURE module: no I/O.
 // -----------------------------------------------------------------------------
 
@@ -15,7 +16,20 @@ export const TRIGGERS = {
   RF: 'rf_code_received',
   IR: 'ir_code_received',
   AVAILABILITY: 'availability_changed',
+  RFID: 'rfid_tag_read',
 };
+
+// RFID / NFC badge readers: each one publishes `tele/<topic>/SENSOR` once per
+// badge read (never in the periodic telemetry), e.g.
+//   {"RC522":{"UID":"BA839D07","Data":"","Type":"MIFARE 1KB"}}
+//   {"PN532":{"UID":"94D8FC5F","Data":""}}   {"RDM6300":{"UID":"0011AABB"}}
+//   {"Wiegand":{"UID":12345678,"Size":26}}   (decimal, or hex with WiegandHex)
+export const RFID_READERS = ['RC522', 'PN532', 'RDM6300', 'Wiegand'];
+
+/** Badge UID as a scene filter compares it: a string, hex digits upper-cased. */
+export function normalizeUid(uid) {
+  return String(uid).trim().toUpperCase();
+}
 
 // Button actions Tasmota reports, as accepted by the trigger filter.
 export const BUTTON_ACTIONS = ['SINGLE', 'DOUBLE', 'TRIPLE', 'QUAD', 'PENTA', 'HOLD', 'CLEAR'];
@@ -58,6 +72,17 @@ export function extractEvents(payload) {
           data: { code: data, rf_key: content.RfKey == null ? '' : String(content.RfKey) },
         });
       }
+      continue;
+    }
+    if (RFID_READERS.includes(name) && content.UID !== undefined && content.UID !== '') {
+      events.push({
+        key: TRIGGERS.RFID,
+        data: {
+          uid: normalizeUid(content.UID),
+          data: content.Data == null ? '' : String(content.Data),
+          reader: name,
+        },
+      });
       continue;
     }
     if (name === 'IrReceived') {

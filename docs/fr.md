@@ -20,7 +20,8 @@ capteurs. Aucun cloud.
   indice UV, humidité du sol, entrées analogiques, compteurs d'impulsions, entrées interrupteur,
   température de la puce, signal Wi-Fi et durée de fonctionnement.
 - **Déclencheurs de scène** : bouton appuyé (simple, double, triple… appui long), entrée
-  interrupteur changée, code RF reçu (Sonoff RF Bridge), code IR reçu, appareil en ligne / hors
+  interrupteur changée, code RF reçu (Sonoff RF Bridge), code IR reçu, **badge RFID lu** (RC522, PN532, RDM6300,
+  Wiegand), appareil en ligne / hors
   ligne.
 - **Actions de scène** : envoyer n'importe quelle commande Tasmota (Backlog, RfSend, IRSend,
   Rule…), allumer un relais un moment, faire clignoter une lampe, redémarrer un appareil.
@@ -174,13 +175,20 @@ lampe peut être identifié (il clignote deux fois) comme les ampoules.
 
 Dans la catégorie **Intégrations** de l'éditeur de scènes (Gladys 5.1 ou plus récent) :
 
-| Déclencheur                            | Réglage Tasmota nécessaire                            | Variables          |
-| -------------------------------------- | ----------------------------------------------------- | ------------------ |
-| Bouton Tasmota appuyé                  | `SetOption73 1` (boutons découplés des relais)        | `button`, `action` |
-| Entrée interrupteur Tasmota changée    | `SetOption114 1` (interrupteurs découplés des relais) | `switch`, `action` |
-| Code RF reçu                           | un RF Bridge (`RfReceived`)                           | `code`, `rf_key`   |
-| Code IR reçu                           | un récepteur IR (`IrReceived`)                        | `code`, `protocol` |
-| Appareil Tasmota en ligne / hors ligne | aucun (LWT en MQTT, échecs de lecture en HTTP)        | `status`           |
+| Déclencheur                            | Réglage Tasmota nécessaire                            | Variables               |
+| -------------------------------------- | ----------------------------------------------------- | ----------------------- |
+| Bouton Tasmota appuyé                  | `SetOption73 1` (boutons découplés des relais)        | `button`, `action`      |
+| Entrée interrupteur Tasmota changée    | `SetOption114 1` (interrupteurs découplés des relais) | `switch`, `action`      |
+| Code RF reçu                           | un RF Bridge (`RfReceived`)                           | `code`, `rf_key`        |
+| Code IR reçu                           | un récepteur IR (`IrReceived`)                        | `code`, `protocol`      |
+| Badge RFID lu                          | un lecteur RC522, PN532, RDM6300 ou Wiegand           | `uid`, `data`, `reader` |
+| Appareil Tasmota en ligne / hors ligne | aucun (LWT en MQTT, échecs de lecture en HTTP)        | `status`                |
+
+Un lecteur RFID reçoit aussi une fonctionnalité texte **Last badge (RC522)** (le dernier badge lu, du nom du lecteur), ajoutée à son appareil à
+la première lecture (cliquez sur **Mettre à jour** dans l'onglet Découverte). L'UID est en
+majuscules (`BA839D07`) : saisissez-le ainsi dans le filtre. Le RC522 demande une version de
+Tasmota compilée avec `USE_RC522` (`Data` et `Type` demandent `USE_RC522_DATA_FUNCTION` et
+`USE_RC522_TYPE_INFORMATION`).
 
 Chaque filtre est facultatif : laissé vide, il accepte tout. Lisez les valeurs dans les actions
 suivantes avec `{{triggerEvent.data.code}}`, par exemple.

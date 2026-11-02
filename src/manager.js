@@ -488,7 +488,11 @@ export class TasmotaManager {
     const ids = this.ids(record.mac);
     const states = readings
       .filter(({ key }) => record.features[key])
-      .map(({ key, value }) => ({ device_feature_external_id: ids.feature(key), state: value }));
+      .map(({ key, value, text }) =>
+        text !== undefined
+          ? { device_feature_external_id: ids.feature(key), text }
+          : { device_feature_external_id: ids.feature(key), state: value },
+      );
     if (states.length > 0) {
       await this.gladys.publishChangedStates(states, { heartbeat: STATE_HEARTBEAT_MS });
     }

@@ -74,6 +74,7 @@ test('every trigger exposes the keys its events carry', () => {
     [TRIGGERS.RF]: ['device', 'code', 'rf_key'],
     [TRIGGERS.IR]: ['device', 'code', 'protocol'],
     [TRIGGERS.AVAILABILITY]: ['device', 'status'],
+    [TRIGGERS.RFID]: ['device', 'uid', 'data', 'reader'],
   };
   for (const trigger of manifest.scene_triggers) {
     const declared = new Set([...keysOf(trigger.fields), ...keysOf(trigger.variables)]);

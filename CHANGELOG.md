@@ -20,6 +20,9 @@ the notes of the version's GitHub Release.
 - A device set with `SetOption30 1` in Tasmota publishes its relays as lights.
 - A relay made a light can be identified (it blinks), from the action, the
   scene action and the device widget.
+- RFID / NFC badge readers (RC522, PN532, RDM6300, Wiegand): a "RFID badge
+  read" scene trigger (filter on the reader and the badge UID; `uid`, `data`
+  and `reader` in the scene) and a "Last badge" text feature.
 
 ## [1.1.0] - 2026-10-26
 
