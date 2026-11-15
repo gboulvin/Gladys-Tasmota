@@ -473,8 +473,10 @@ function sensorReadings(sensors, ctx) {
         key: `${slug(name)}-uid`,
         spec: feature(`Last badge (${name})`, C.TEXT, T.TEXT.TEXT, {
           keep_history: false,
-          min: undefined,
-          max: undefined,
+          // a text has no range, but Gladys stores min / max as NOT NULL:
+          // 0 / 0, like the text features of the internal integrations
+          min: 0,
+          max: 0,
         }),
         text: normalizeUid(content.UID),
       });

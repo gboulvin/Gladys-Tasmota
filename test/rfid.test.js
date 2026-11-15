@@ -50,6 +50,9 @@ test('the last badge is a text feature, and no numeric feature leaks from the UI
   assert.equal(reading.spec.category, C.TEXT);
   assert.equal(reading.spec.type, T.TEXT.TEXT);
   assert.equal(reading.spec.keep_history, false);
+  // NOT NULL in Gladys: without them, "Add" answers HTTP 422
+  assert.equal(reading.spec.min, 0);
+  assert.equal(reading.spec.max, 0);
   // An all-digit Wiegand UID must not turn into a numeric sensor.
   const wiegand = extractReadings('sensors', { Wiegand: { UID: 12345678, Size: 26 } });
   assert.deepEqual(

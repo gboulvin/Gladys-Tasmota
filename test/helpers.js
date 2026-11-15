@@ -127,6 +127,28 @@ export class FakeMqtt extends EventEmitter {
   }
 }
 
+/** Every published feature carries the NOT NULL columns of t_device_feature. */
+export function assertStorableFeatures(devices) {
+  for (const device of devices) {
+    for (const f of device.features) {
+      const where = `${device.name} / ${f.external_id}`;
+      if (typeof f.name !== 'string' || f.name === '') {
+        throw new Error(`${where}: name must be a non-empty string`);
+      }
+      for (const key of ['read_only', 'has_feedback']) {
+        if (typeof f[key] !== 'boolean') {
+          throw new Error(`${where}: ${key} must be a boolean`);
+        }
+      }
+      for (const key of ['min', 'max']) {
+        if (!Number.isFinite(f[key])) {
+          throw new Error(`${where}: ${key} must be a number (0 for a feature without a range)`);
+        }
+      }
+    }
+  }
+}
+
 /**
  * A manager on a fake Gladys, a fake MQTT transport and a fake HTTP client.
  * `httpAnswers` maps "address command" (e.g. "192.168.1.20 Status 0") to a
@@ -135,6 +157,15 @@ export class FakeMqtt extends EventEmitter {
 export async function createManager({ config = {}, httpAnswers = {}, devices = [] } = {}) {
   const gladys = createFakeGladys({ devices });
   await gladys.connect();
+  // Gladys stores these feature columns as NOT NULL: a feature missing one
+  // is refused when the user clicks "Add" in the Discovery tab (HTTP 422
+  // "t_device_feature.min cannot be null"). Checked on every publication of
+  // the tests until the fake Gladys of the SDK checks them itself.
+  const publish = gladys.publishDiscoveredDevices.bind(gladys);
+  gladys.publishDiscoveredDevices = async (published) => {
+    assertStorableFeatures(published);
+    return publish(published);
+  };
   const mqtt = new FakeMqtt();
   const httpCalls = [];
   const http = async (address, cmnd, credentials) => {

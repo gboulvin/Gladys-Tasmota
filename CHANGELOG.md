@@ -10,6 +10,13 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Fixed
+
+- An RFID reader's "Last badge" feature can be added: Gladys refused the
+  device with "HTTP 422 — t_device_feature.min cannot be null" (a text feature
+  now has a 0 / 0 range). If the device was refused, click Update (or Add)
+  again in the Discovery tab.
+
 ## [1.2.0] - 2026-11-02
 
 ### Added
